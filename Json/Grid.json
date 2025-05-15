@@ -13,7 +13,7 @@
     "marker_text": [97, 0],
     "ebeam_field_markers": [95, 0],
     "origin_marker_layer": [97, 0],
-    "corner_labels": [97, 0]
+    "corner_labels_layer": [97, 0]
   },
   "ebeam_field": {
     "field_size": 500,
