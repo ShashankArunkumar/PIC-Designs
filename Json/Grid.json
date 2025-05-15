@@ -1,0 +1,39 @@
+{
+  "component_name": "Grid",
+  "chip_size": [10000, 10000],
+  "grid_settings": {
+    "grid_box_size": 500,
+    "grid_line_width": 0.005,
+    "boundary_line_width": 0.005
+  },
+  "layers": {
+    "chip_boundary": [99, 0],
+    "grid": [98, 0],
+    "marker_boxes": [97, 0],
+    "marker_text": [97, 0],
+    "ebeam_field_markers": [95, 0],
+    "origin_marker_layer": [97, 0],
+    "corner_labels": [97, 0]
+  },
+  "ebeam_field": {
+    "field_size": 500,
+    "marker_settings": {
+      "marker_size": 8.0,
+      "marker_offset": 20.0
+    }
+  },
+  "coordinate_markers": {
+    "marker_size": 20,
+    "text_size": 10,
+    "offsets": {
+      "vertical":250,
+      "horizontal":250
+    },
+    "text_y_offset": -100
+  },
+  "origin_marker_settings": {
+    "size": [8, 8]
+  },
+  "corner_label_text_size": 50,
+  "corner_label_text_offset": 100
+}
