@@ -12,7 +12,7 @@
     "marker_boxes": [97, 0],
     "marker_text": [97, 0],
     "ebeam_field_markers": [95, 0],
-    "origin_marker_layer": [97, 0],
+    "origin_(2,0)": [97, 0],
     "corner_labels_layer": [97, 0]
   },
   "ebeam_field": {

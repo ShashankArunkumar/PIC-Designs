@@ -262,7 +262,7 @@ def create_grid_component(config: dict) -> gf.Component:
     layer_marker_boxes = tuple(layers.get("marker_boxes", (97, 0)))
     layer_marker_text = tuple(layers.get("marker_text", (97, 0)))
     layer_ebeam_field_markers = tuple(layers.get("ebeam_field_markers", (95, 0)))
-    layer_origin_marker = tuple(layers.get("origin_marker_layer", layer_marker_boxes)) # Default to marker_boxes if not specified
+    layer_origin_marker = tuple(layers.get("origin_(2,0)", layer_marker_boxes)) # Default to marker_boxes if not specified
     layer_corner_labels = tuple(layers.get("corner_labels_layer", layers.get("corner_labels", layer_marker_text))) # Fallback for corner labels layer
 
     # Create main component that will hold all other sub-components
@@ -296,9 +296,6 @@ if __name__ == "__main__":
     
     if config:
         grid = create_grid_component(config)
-        output_path = "grid_layout.gds" # Save in the current workspace directory
-        grid.write_gds(output_path)
-        print(f"GDS file saved to: {output_path}")
         grid.show()
     else:
-        print("Failed to load grid configuration")
+        print("Failed to load grid configuration") 
