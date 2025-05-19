@@ -47,8 +47,8 @@
   },
   "die_box": {
     "grid_size": 500.0,
-    "outline_width": 0.005,
-    "grid_line_width": 0.005,
+    "outline_width": 0.002,
+    "grid_line_width": 0.002,
     "extra_die_grid": 1
   },
   "die_text": {

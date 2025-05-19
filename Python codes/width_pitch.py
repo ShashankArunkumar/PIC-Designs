@@ -147,19 +147,32 @@ def add_die_box_with_grid(component):
     die_height = ((int((height // grid_size) + 1) if height % grid_size != 0 else int(height // grid_size)) + 1) * grid_size
     n_x = int(die_width // grid_size)
     n_y = int(die_height // grid_size)
-    die_xmin = xmin - 0.5 * (die_width - width)
-    die_ymin = ymin - 0.5 * (die_height - height)
+    grid_line_width = die_box_params.get("grid_line_width", 0.5)
+    # Center the die at (0,0): shift the component so its bbox center is at (0,0)
+    comp_cx = (xmax + xmin) / 2
+    comp_cy = (ymax + ymin) / 2
+    component.move((-comp_cx, -comp_cy))
+    # Now place die grid, markers, and tag relative to the new origin
+    die_xmin = -die_width / 2
+    die_ymin = -die_height / 2
+    # Snap die_xmin and die_ymin to exact grid points to avoid floating point errors
+    die_xmin = -round(die_width / 2 / grid_size) * grid_size
+    die_ymin = -round(die_height / 2 / grid_size) * grid_size
     die_grid = gf.Component("Die_Grid")
-    die_grid.add_ref(gf.components.rectangle(size=(die_width, 0.5), layer=die_layer)).move((0, 0))
-    die_grid.add_ref(gf.components.rectangle(size=(die_width, 0.5), layer=die_layer)).move((0, die_height-0.5))
-    die_grid.add_ref(gf.components.rectangle(size=(0.5, die_height), layer=die_layer)).move((0, 0))
-    die_grid.add_ref(gf.components.rectangle(size=(0.5, die_height), layer=die_layer)).move((die_width-0.5, 0))
-    for i in range(1, n_x):
+    for i in range(n_x + 1):
         x = i * grid_size
-        die_grid.add_ref(gf.components.rectangle(size=(0.5, die_height), layer=grid_layer)).move((x, 0))
-    for j in range(1, n_y):
+        die_grid.add_ref(
+            gf.components.rectangle(
+                size=(grid_line_width, die_height), layer=grid_layer
+            )
+        ).move((x - grid_line_width / 2, 0))
+    for j in range(n_y + 1):
         y = j * grid_size
-        die_grid.add_ref(gf.components.rectangle(size=(die_width, 0.5), layer=grid_layer)).move((0, y))
+        die_grid.add_ref(
+            gf.components.rectangle(
+                size=(die_width, grid_line_width), layer=grid_layer
+            )
+        ).move((0, y - grid_line_width / 2))
     die_grid_ref = component.add_ref(die_grid)
     die_grid_ref.move((die_xmin, die_ymin))
     e_beam_markers = gf.Component("E beam markers")
@@ -195,5 +208,4 @@ if __name__ == "__main__":
     if output_params["show"]:
         c.show()
     c.write_gds(output_params["gds_path"])
-    if output_params["log"]:
-        print(f"Saved GDS to {output_params['gds_path']} as {die_name}")
+    # Prevent OASIS file creation (do not call write_oas or set oas_path anywhere)

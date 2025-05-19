@@ -64,29 +64,20 @@ def create_grid_lines_component(chip_size, boundary_line_width, grid_box_size, g
     usable_width = chip_size[0] - boundary_line_width
     usable_height = chip_size[1] - boundary_line_width
     
-    num_x_lines = int(usable_width // grid_box_size)
-    num_y_lines = int(usable_height // grid_box_size)
-
-    # Calculate actual spacing to center the grid pattern if desired, or adjust start/end
-    # For simplicity, we'll draw lines based on the number that fit, starting from one edge of usable area
-
-    start_x = -usable_width / 2 + grid_box_size / 2 # Offset to center the first line in its 'box'
-    start_y = -usable_height / 2 + grid_box_size / 2 # Offset to center the first line in its 'box'
+    # Use full chip size for grid lines, so grid is measured from chip edge to edge
+    num_x_lines = int(chip_size[0] // grid_box_size)
+    num_y_lines = int(chip_size[1] // grid_box_size)
 
     # Vertical lines
-    for i in range(num_x_lines + 1): # +1 to include lines at both ends of the 'boxes'
-        x_coord_val = -usable_width/2 + i * grid_box_size
-        if abs(x_coord_val) <= usable_width/2 + grid_line_width: # Adjusted boundary condition slightly to ensure lines at the very edge are included
-            line = c << gf.components.rectangle(size=(grid_line_width, usable_height), layer=layer_grid, centered=True)
-            line.movex(x_coord_val)
-            
+    for i in range(num_x_lines + 1):
+        x_coord_val = -chip_size[0]/2 + i * grid_box_size
+        line = c << gf.components.rectangle(size=(grid_line_width, chip_size[1]), layer=layer_grid, centered=True)
+        line.movex(x_coord_val)
     # Horizontal lines
-    for i in range(num_y_lines + 1): # +1 for lines at both ends
-        y_coord_val = -usable_height/2 + i * grid_box_size
-        if abs(y_coord_val) <= usable_height/2 + grid_line_width: # Adjusted boundary condition slightly
-            line = c << gf.components.rectangle(size=(usable_width, grid_line_width), layer=layer_grid, centered=True)
-            line.movey(y_coord_val)
-            
+    for i in range(num_y_lines + 1):
+        y_coord_val = -chip_size[1]/2 + i * grid_box_size
+        line = c << gf.components.rectangle(size=(chip_size[0], grid_line_width), layer=layer_grid, centered=True)
+        line.movey(y_coord_val)
     return c
 
 def create_coordinate_markers_component(chip_size, marker_config, grid_box_size, layer_marker_boxes, layer_marker_text) -> gf.Component:
@@ -297,5 +288,8 @@ if __name__ == "__main__":
     if config:
         grid = create_grid_component(config)
         grid.show()
+        # Save as GDS file
+        grid.write_gds("build/gds/grid_layout.gds")
+        print("GDS file saved as build/gds/grid_layout.gds")
     else:
-        print("Failed to load grid configuration") 
+        print("Failed to load grid configuration")

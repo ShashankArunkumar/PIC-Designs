@@ -3,8 +3,8 @@
   "chip_size": [10000, 10000],
   "grid_settings": {
     "grid_box_size": 500,
-    "grid_line_width": 0.005,
-    "boundary_line_width": 0.005
+    "grid_line_width": 0.002,
+    "boundary_line_width": 0.002
   },
   "layers": {
     "chip_boundary": [99, 0],
