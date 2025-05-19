@@ -1,0 +1,78 @@
+{
+  "layers": {
+    "waveguide": [1, 0],
+    "die_outline": [100, 0],
+    "grid": [100, 0],
+    "e_beam_marker": [102, 0],
+    "die_text": [103, 0],
+    "marker": [10, 0],
+    "die_grid": [100, 0],
+    "die_box": [5, 0]
+  },
+  "waveguide_with_grating_couplers": {
+    "wg_length": 3000.0,
+    "taper_length": 20.0,
+    "grating_n_periods": 50,
+    "grating_fill_factor": 0.5,
+    "grating_taper_length_gc": 26.6,
+    "grating_taper_angle_gc": 30.0,
+    "grating_wavelength_gc": 0.53,
+    "grating_fiber_angle_gc": 15.0,
+    "grating_polarization_gc": "te",
+    "cross_section_type": "strip",
+    "grating_coupler_width": 0.5
+  },
+  "p_cascades": {
+    "y_spacing": 25.0,
+    "x_offset": 40.0,
+    "wg_width_start": 0.3,
+    "wg_width_stop": 0.4,
+    "wg_width_step": 0.02,
+    "period_start": 0.5,
+    "period_stop": 0.545,
+    "period_step": 0.005,
+    "cascade_spacing": 250.0,
+    "x0": 0.0,
+    "y0": 150.0,
+    "inter_cascade_spacing": null,
+    "n_cascades": null,
+    "cascade_name_prefix": "p"
+  },
+  "e_beam_marker": {
+    "size": 8.0,
+    "offset": 16.0,
+    "output_marker_size": 8.0,
+    "output_marker_offset_x": 16.0,
+    "output_marker_offset_y": 0.0
+  },
+  "die_box": {
+    "grid_size": 500.0,
+    "outline_width": 0.005,
+    "grid_line_width": 0.005,
+    "extra_die_grid": 1
+  },
+  "die_text": {
+    "text_size": 50,
+    "offset_x": 150,
+    "offset_y": 150,
+    "device_offset_x": 5,
+    "device_offset_y": 5,
+    "output_text_size": 50,
+    "output_text_offset_x": 50,
+    "output_text_offset_y": 50,
+    "name_prefix": "Die "
+  },
+  "device_marker": {
+    "size": 8.0,
+    "offset": 75.0
+  },
+  "device_text": {
+    "offset_x": 25,
+    "offset_y": 0
+  },
+  "output": {
+    "gds_path": "build/gds/period_cascades.gds",
+    "show": true,
+    "log": true
+  }
+}
