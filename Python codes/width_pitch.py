@@ -114,7 +114,7 @@ def p_cascades():
     cascade_spacing = p_cascades_params["cascade_spacing"]
     x0 = p_cascades_params["x0"]
     y0 = p_cascades_params["y0"]
-    c = gf.Component("period_cascades")
+    c = gf.Component("wp_cascades")
     for j, period in enumerate(periods):
         cascade_name = f"{p_cascades_params['cascade_name_prefix']}{int(period*1000)}"
         cascade = gf.Component(cascade_name)
@@ -130,13 +130,18 @@ def p_cascades():
     die_name = die_text_params["name_prefix"] + "1"
     return c, die_name
 
-def add_die_box_with_grid(component):
+def add_die_box_with_grid(component, die_name=None):
     grid_size = die_box_params["grid_size"]
     die_layer = tuple(layers["die_box"])
     grid_layer = tuple(layers["die_grid"])
     tag_layer = tuple(layers["die_text"])
     marker_layer = tuple(layers["e_beam_marker"])
-    die_name = die_text_params["name_prefix"] + "1"
+    # Allow die_name override, otherwise use default
+    if die_name is None:
+        die_name = die_text_params["name_prefix"] + "1"
+    # If die_name is an integer, format as Die number (no brackets)
+    if isinstance(die_name, int):
+        die_name = f"Die {die_name}"
     marker_size = e_beam_marker_params["size"]
     marker_offset = e_beam_marker_params["offset"]
     bbox = component.bbox()

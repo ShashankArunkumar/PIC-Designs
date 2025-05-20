@@ -1,0 +1,14 @@
+{
+  "placements": [
+    {
+      "py_path": "Python codes/width_pitch.py",
+      "die_number": 1,
+      "position": [0, 1500]
+    },
+    {
+      "py_path": "Python codes/width_pitch.py",
+      "die_number": 2,
+      "position": [0, -1500]
+    }
+  ]
+}

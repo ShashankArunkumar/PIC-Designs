@@ -10,7 +10,7 @@
     "die_box": [5, 0]
   },
   "waveguide_with_grating_couplers": {
-    "wg_length": 3000.0,
+    "wg_length": 3160.0,
     "taper_length": 20.0,
     "grating_n_periods": 50,
     "grating_fill_factor": 0.5,
@@ -23,8 +23,8 @@
     "grating_coupler_width": 0.5
   },
   "p_cascades": {
-    "y_spacing": 25.0,
-    "x_offset": 40.0,
+    "y_spacing": 30.0,
+    "x_offset": 115.0,
     "wg_width_start": 0.3,
     "wg_width_stop": 0.4,
     "wg_width_step": 0.02,
@@ -64,14 +64,14 @@
   },
   "device_marker": {
     "size": 8.0,
-    "offset": 75.0
+    "offset": 45.0
   },
   "device_text": {
-    "offset_x": 25,
+    "offset_x": 10,
     "offset_y": 0
   },
   "output": {
-    "gds_path": "build/gds/period_cascades.gds",
+    "gds_path": "build/gds/wp_cascades.gds",
     "show": true,
     "log": true
   }

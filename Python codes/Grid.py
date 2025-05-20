@@ -212,18 +212,7 @@ def create_corner_labels_component(chip_size, config, layer_corner_labels) -> gf
     """Creates the corner labels component."""
     c = gf.Component("corner_labels")
     print(f"Adding corner labels (Layer {layer_corner_labels})...")
-    corner_text_size = config.get("corner_label_text_size", 200)
-    corner_text_offset = config.get("corner_label_text_offset", 300) # Offset from the actual corner
-    
-    hw = chip_size[0]/2
-    hh = chip_size[1]/2
-    
-    # Text justification defaults to 'left', 'baselne' for gf.components.text.
-    # Using 'center' for easier placement relative to calculated points.
-    t1=c<<gf.components.text(text="1",size=corner_text_size,layer=layer_corner_labels,justify='center'); t1.move((-hw+corner_text_offset,hh-corner_text_offset)) # Top-Left
-    t2=c<<gf.components.text(text="2",size=corner_text_size,layer=layer_corner_labels,justify='center'); t2.move((-hw+corner_text_offset,-hh+corner_text_offset)) # Bottom-Left
-    t3=c<<gf.components.text(text="3",size=corner_text_size,layer=layer_corner_labels,justify='center'); t3.move((hw-corner_text_offset,-hh+corner_text_offset)) # Bottom-Right
-    t4=c<<gf.components.text(text="4",size=corner_text_size,layer=layer_corner_labels,justify='center'); t4.move((hw-corner_text_offset,hh-corner_text_offset)) # Top-Right
+    # Remove all corner label text (1,2,3,4)
     return c
 
 def create_grid_component(config: dict) -> gf.Component:
@@ -257,7 +246,7 @@ def create_grid_component(config: dict) -> gf.Component:
     layer_corner_labels = tuple(layers.get("corner_labels_layer", layers.get("corner_labels", layer_marker_text))) # Fallback for corner labels layer
 
     # Create main component that will hold all other sub-components
-    top_level_cell = gf.Component("Complete_Grid_Layout")
+    top_level_cell = gf.Component("Grid")
     
     # Create and add sub-components
     boundary_comp = create_chip_boundary_component(chip_size, boundary_line_width, layer_chip_boundary)
@@ -275,9 +264,9 @@ def create_grid_component(config: dict) -> gf.Component:
     origin_marker_comp = create_origin_marker_component(origin_marker_settings_config, layer_origin_marker)
     top_level_cell << origin_marker_comp
     
-    corner_labels_comp = create_corner_labels_component(chip_size, config, layer_corner_labels)
-    top_level_cell << corner_labels_comp
-    
+    # Remove corner labels from the grid hierarchy by not adding the component
+    # corner_labels_comp = create_corner_labels_component(chip_size, config, layer_corner_labels)
+    # top_level_cell << corner_labels_comp
     return top_level_cell
 
 if __name__ == "__main__":
