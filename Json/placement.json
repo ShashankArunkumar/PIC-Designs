@@ -6,7 +6,7 @@
       "position": [0, 1500]
     },
     {
-      "py_path": "Python codes/width_pitch.py",
+      "py_path": "Python codes/ROC_array.py",
       "die_number": 2,
       "position": [0, -1500]
     }
