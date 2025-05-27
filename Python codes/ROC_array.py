@@ -18,63 +18,33 @@ def build_component_from_params(params):
     taper_length = params["taper"]["length"]
     enable_text = params["text"]["enable"]
     grating_coupler_config = params["grating_coupler"]
-
+    
     cross_section = gf.cross_section.strip(width=width, layer=layer)
     bend_180 = gf.path.euler(radius=s, angle=180)
     H = bend_180.length()
     I = bend_180.points[-1][1] - bend_180.points[0][1]
-
+    
     if r > 0:
-        Q = gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=-90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=90)
-        Q += gf.path.euler(radius=r, angle=-90)
+        # Create Q path with 10 S-bend units (40 total bends)
+        # Each S-bend unit: -90, +90, +90, -90 (returns to same y, advances in x)
+        Q = gf.Path()
+        for i in range(10):
+            Q += gf.path.euler(radius=r, angle=-90)
+            Q += gf.path.euler(radius=r, angle=90)
+            Q += gf.path.euler(radius=r, angle=90)
+            Q += gf.path.euler(radius=r, angle=-90)
         
         J = Q.length()
         K = Q.points[-1][0] - Q.points[0][0]
     else:
         J = 0
         K = 0
+
+    # Constraint Equations
     u = (D - K - 2*x)/2
     a = (L - 2*x - 4*H - J - 2*u) / 4
 
-    # Path construction (do NOT use P.append(start_point))
+    # Path construction 
     P = gf.Path()
     P += gf.path.straight(length=x)
     P += gf.path.straight(length=a)
@@ -86,59 +56,30 @@ def build_component_from_params(params):
         bends_x = K
         P += gf.path.straight(length=bends_x)
     else:
-        # Add the bends as in ROC.py
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=90)
-        P += gf.path.euler(radius=r, angle=-90)
-        P += gf.path.straight(length=u)
-        P += gf.path.euler(radius=s, angle=180)
-        P += gf.path.straight(length=a)
-        P += gf.path.euler(radius=s, angle=-180)
-        P += gf.path.straight(length=a)
-        P += gf.path.straight(length=x)
-    # Shift the entire path by (-taper_length, 0) to set the origin as in ROC.py
-    P = P.move(origin=(0, 0), destination=(-taper_length, 0))
+        for i in range(10):
+            P += gf.path.euler(radius=r, angle=-90)
+            P += gf.path.euler(radius=r, angle=90)
+            P += gf.path.euler(radius=r, angle=90)
+            P += gf.path.euler(radius=r, angle=-90)
+    
+    P += gf.path.straight(length=u)
+    P += gf.path.euler(radius=s, angle=180)
+    P += gf.path.straight(length=a)
+    P += gf.path.euler(radius=s, angle=-180)
+    P += gf.path.straight(length=a)
+    P += gf.path.straight(length=x)
 
     cell_name = f"w{int(width*1000)}r{r}"
     final_comp = gf.Component(cell_name)
     wg = gf.path.extrude(P, cross_section=cross_section)
+    wg_ref = final_comp << wg
+    
+    # Store path metrics for uniformity checking
+    path_length = P.length()
+    x_diff = P.points[-1][0] - P.points[0][0]
+    final_comp._path_metrics = {'length': path_length, 'x_diff': x_diff}
+    
+    # ...existing grating coupler and component assembly code...
     wg_ref = final_comp << wg
     grating_n_periods = grating_coupler_config["n_periods"]
     grating_period = grating_coupler_config["period"]
@@ -207,6 +148,8 @@ r_values = params["geometry"]["r_values"]
 # Create the array component
 array_comp = gf.Component(f"w{width_nm}")
 spacing = params["array"]["spacing"]  # micron spacing between devices from JSON
+components_with_metrics = []
+
 for i, r in enumerate(r_values):
     # Each ROC element as a cell
     local_params = copy.deepcopy(params)
@@ -214,77 +157,29 @@ for i, r in enumerate(r_values):
     cell = build_component_from_params(local_params)
     ref = array_comp.add_ref(cell)
     ref.move((0, i * spacing))
+    
+    # Collect path metrics for uniformity check
+    components_with_metrics.append(cell)
 
 # Show or export the array
 if __name__ == "__main__":
-    # For uniformity check, collect path lengths and x-coordinate differences
-    # Use the already created cells to avoid duplicate cell names
-    path_lengths = []
-    x_diffs = []
-    for i, r in enumerate(r_values):
-        # Get parameters for this r value
-        local_params = copy.deepcopy(params)
-        local_params["geometry"]["r"] = r
+    # Check that path lengths and x_diff values are different for different r values
+    if len(components_with_metrics) > 1:
+        first_metrics = components_with_metrics[0]._path_metrics
+        first_length = first_metrics['length']
+        first_x_diff = first_metrics['x_diff']
+          # Check if lengths are correctly uniform (should be same for different r values)
+        lengths_are_uniform = all(abs(comp._path_metrics['length'] - first_length) < 1e-10 
+                                for comp in components_with_metrics)
+        x_diffs_are_uniform = all(abs(comp._path_metrics['x_diff'] - first_x_diff) < 1e-10 
+                                for comp in components_with_metrics)
         
-        # Calculate path metrics without creating new components
-        r_val = local_params["geometry"]["r"]
-        L = local_params["geometry"]["L"]
-        D = local_params["geometry"]["D"]
-        x = local_params["geometry"]["x"]
-        s = local_params["geometry"]["s"]
-        width = local_params["geometry"]["width"]
-        layer = tuple(local_params["layers"]["waveguide"])
-        taper_length = local_params["taper"]["length"]
-        cross_section = gf.cross_section.strip(width=width, layer=layer)
-        bend_180 = gf.path.euler(radius=s, angle=180)
-        H = bend_180.length()
-        
-        if r_val > 0:
-            Q = gf.path.euler(radius=r_val, angle=-90)
-            for _ in range(39):
-                Q += gf.path.euler(radius=r_val, angle=90 if (_ % 2 == 0) else -90)
-            J = Q.length()
-            K = Q.points[-1][0] - Q.points[0][0]
+        if lengths_are_uniform and x_diffs_are_uniform:
+            print("Path length uniformity verified")
         else:
-            J = 0
-            K = 0
-        u = (D - K - 2*x)/2
-        a = (L - 2*x - 4*H - J - 2*u) / 4
-        
-        P = gf.Path()
-        P += gf.path.straight(length=x)
-        P += gf.path.straight(length=a)
-        P += gf.path.euler(radius=s, angle=-180)
-        P += gf.path.straight(length=a)
-        P += gf.path.euler(radius=s, angle=180)
-        P += gf.path.straight(length=u)
-        if r_val == 0:
-            bends_x = K
-            P += gf.path.straight(length=bends_x)
-        else:
-            for _ in range(40):
-                P += gf.path.euler(radius=r_val, angle=-90 if (_ % 2 == 0) else 90)
-            P += gf.path.straight(length=u)
-            P += gf.path.euler(radius=s, angle=180)
-            P += gf.path.straight(length=a)
-            P += gf.path.euler(radius=s, angle=-180)
-            P += gf.path.straight(length=a)
-            P += gf.path.straight(length=x)
-        P = P.move(origin=(0, 0), destination=(-taper_length, 0))
-        total_length = P.length()
-        
-        # Create a temporary component for calculating final x coordinate
-        temp_comp = gf.Component(f"temp_{r}")
-        wg = gf.path.extrude(P, cross_section=cross_section)
-        wg_ref = temp_comp << wg
-        final_x = wg_ref.ports["o2"].center[0]
-        x_diff = final_x - D
-        path_lengths.append(total_length)
-        x_diffs.append(x_diff)
+            print("Path length error")
+            for i, comp in enumerate(components_with_metrics):
+                metrics = comp._path_metrics
+                print(f"  r={r_values[i]}: length={metrics['length']:.10f}, x_diff={metrics['x_diff']:.10f}")
     
-    # Check uniformity
-    if all(abs(l - path_lengths[0]) < 1e-6 for l in path_lengths) and all(abs(x - x_diffs[0]) < 1e-6 for x in x_diffs):
-        print("Path length uniformity verified")
-    else:
-        print("Path length error")
     array_comp.show()

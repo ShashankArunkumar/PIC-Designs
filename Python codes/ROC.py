@@ -34,7 +34,6 @@ cross_section = gf.cross_section.strip(width=width, layer=layer)
 #param
 bend_180 = gf.path.euler(radius=s, angle=180)
 H = bend_180.length()
-I = bend_180.points[-1][1] - bend_180.points[0][1]
 
 if r > 0:
     Q = gf.path.euler(radius=r, angle=-90)
@@ -90,7 +89,7 @@ c = gf.Component("path_only")
 
 
 # Define the starting position for the path
-start_point = (-taper_length, 0)
+start_point = (0, 0)
 
 # Create path starting from this point
 P = gf.Path()
@@ -109,10 +108,6 @@ if r == 0:
     P += gf.path.straight(length=bends_x)
 else:
     # Add the bends as usual
-    P += gf.path.euler(radius=r, angle=-90)
-    P += gf.path.euler(radius=r, angle=90)
-    P += gf.path.euler(radius=r, angle=90)
-    P += gf.path.euler(radius=r, angle=-90)
     P += gf.path.euler(radius=r, angle=-90)
     P += gf.path.euler(radius=r, angle=90)
     P += gf.path.euler(radius=r, angle=90)
