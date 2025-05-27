@@ -10,13 +10,13 @@
     "die_box": [5, 0]
   },
   "waveguide_with_grating_couplers": {
-    "wg_length": 3160.0,
+    "wg_length": 4000.0,
     "taper_length": 20.0,
-    "grating_n_periods": 50,
+    "grating_n_periods": 40,
     "grating_fill_factor": 0.5,
-    "grating_taper_length_gc": 26.6,
+    "grating_taper_length_gc": 26.0,
     "grating_taper_angle_gc": 30.0,
-    "grating_wavelength_gc": 0.53,
+    "grating_wavelength_gc": 0.532,
     "grating_fiber_angle_gc": 15.0,
     "grating_polarization_gc": "te",
     "cross_section_type": "strip",
@@ -64,11 +64,13 @@
   },
   "device_marker": {
     "size": 8.0,
-    "offset": 45.0
+    "offset": 45.0,
+    "enable_markers":false
   },
   "device_text": {
-    "offset_x": 10,
-    "offset_y": 0
+    "offset_x": -30,
+    "offset_y": 0,
+    "enable_text": true
   },
   "output": {
     "gds_path": "build/gds/wp_cascades.gds",

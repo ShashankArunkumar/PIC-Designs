@@ -77,35 +77,63 @@ def waveguide_with_grating_couplers(name, wg_width, grating_period):
     gc2_ref.connect("o1", taper2_ref.ports["o1"])
     c.add_port("opt1", port=gc1_ref.ports["o2"])
     c.add_port("opt2", port=gc2_ref.ports["o2"])
+    
     # Device marker and text parameters (left and right)
     marker_size = params["device_marker"]["size"]
     marker_offset = params["device_marker"]["offset"]
     text_offset_x = params["device_text"]["offset_x"]
     text_offset_y = params["device_text"]["offset_y"]
-    # Left marker (input side)
-    left_marker = gf.components.rectangle(size=(marker_size, marker_size), layer=tuple(layers["marker"]))
-    left_marker_ref = c.add_ref(left_marker)
-    left_marker_ref.move((gc1_ref.ports["o2"].center[0] - marker_offset - marker_size, gc1_ref.ports["o2"].center[1] - marker_size / 2))
-    # Left text
-    left_text = gf.components.text(
-        text=f"w{int(wg_width*1000)} p{int(grating_period*1000)}",
-        size=marker_size,
-        layer=tuple(layers["die_text"]),
-    )
-    left_text_ref = c.add_ref(left_text)
-    left_text_ref.move((left_marker_ref.xmin - left_text.size_info.width - text_offset_x, left_marker_ref.ymin + text_offset_y))
-    # Right marker (output side)
-    right_marker = gf.components.rectangle(size=(marker_size, marker_size), layer=tuple(layers["marker"]))
-    right_marker_ref = c.add_ref(right_marker)
-    right_marker_ref.move((gc2_ref.ports["o2"].center[0] + marker_offset, gc2_ref.ports["o2"].center[1] - marker_size / 2))
-    # Right text
-    right_text = gf.components.text(
-        text=f"w{int(wg_width*1000)} p{int(grating_period*1000)}",
-        size=marker_size,
-        layer=tuple(layers["die_text"]),
-    )
-    right_text_ref = c.add_ref(right_text)
-    right_text_ref.move((right_marker_ref.xmax + text_offset_x, right_marker_ref.ymin + text_offset_y))
+    
+    # Check if markers and text are enabled (default to True if not specified)
+    enable_markers = params["device_marker"].get("enable_markers", True)
+    enable_text = params["device_text"].get("enable_text", True)
+    
+    # Create marker and text positions for reference (needed even if markers are disabled but text is enabled)
+    left_marker_pos = (gc1_ref.ports["o2"].center[0] - marker_offset - marker_size, gc1_ref.ports["o2"].center[1] - marker_size / 2)
+    right_marker_pos = (gc2_ref.ports["o2"].center[0] + marker_offset, gc2_ref.ports["o2"].center[1] - marker_size / 2)
+    
+    # Add markers if enabled
+    left_marker_ref = None
+    right_marker_ref = None
+    if enable_markers:
+        # Left marker (input side)
+        left_marker = gf.components.rectangle(size=(marker_size, marker_size), layer=tuple(layers["marker"]))
+        left_marker_ref = c.add_ref(left_marker)
+        left_marker_ref.move(left_marker_pos)
+        
+        # Right marker (output side)
+        right_marker = gf.components.rectangle(size=(marker_size, marker_size), layer=tuple(layers["marker"]))
+        right_marker_ref = c.add_ref(right_marker)
+        right_marker_ref.move(right_marker_pos)
+    
+    # Add text if enabled
+    if enable_text:
+        # Left text
+        left_text = gf.components.text(
+            text=f"w{int(wg_width*1000)} p{int(grating_period*1000)}",
+            size=marker_size,
+            layer=tuple(layers["die_text"]),
+        )
+        left_text_ref = c.add_ref(left_text)
+        # If markers exist, position relative to them, otherwise use calculated positions
+        if left_marker_ref:
+            left_text_ref.move((left_marker_ref.xmin - left_text.size_info.width - text_offset_x, left_marker_ref.ymin + text_offset_y))
+        else:
+            left_text_ref.move((left_marker_pos[0] - left_text.size_info.width - text_offset_x, left_marker_pos[1] + text_offset_y))
+        
+        # Right text
+        right_text = gf.components.text(
+            text=f"w{int(wg_width*1000)} p{int(grating_period*1000)}",
+            size=marker_size,
+            layer=tuple(layers["die_text"]),
+        )
+        right_text_ref = c.add_ref(right_text)
+        # If markers exist, position relative to them, otherwise use calculated positions
+        if right_marker_ref:
+            right_text_ref.move((right_marker_ref.xmax + text_offset_x, right_marker_ref.ymin + text_offset_y))
+        else:
+            right_text_ref.move((right_marker_pos[0] + marker_size + text_offset_x, right_marker_pos[1] + text_offset_y))
+    
     return c
 
 def p_cascades():
@@ -213,4 +241,3 @@ if __name__ == "__main__":
     if output_params["show"]:
         c.show()
     c.write_gds(output_params["gds_path"])
-    # Prevent OASIS file creation (do not call write_oas or set oas_path anywhere)

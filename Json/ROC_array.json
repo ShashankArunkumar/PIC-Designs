@@ -1,0 +1,78 @@
+{
+    "parameters": {
+        "geometry": {
+            "r_values": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+            "L": 8000,
+            "D": 4000,
+            "x": 100,
+            "s": 30,
+            "width": 0.3
+        },
+        "layers": {
+            "waveguide": [1, 0],
+            "text": [3, 0]
+        },
+        "text": {
+            "size": 20,
+            "offset_left": -175,
+            "offset_right": 175,
+            "enable": true
+        },
+        "taper": {
+            "length": 20
+        },
+        "grating_coupler": {
+            "type": "grating_coupler_elliptical_uniform",
+            "n_periods": 40,
+            "period": 0.532,
+            "fill_factor": 0.5,
+            "taper_length": 26.0,
+            "taper_angle": 30.0,
+            "wavelength": 0.532,
+            "fiber_angle": 15.0,
+            "polarization": "te",
+            "width": 0.5
+        },
+        "array": {
+            "spacing": 200
+        }
+    },
+    "description": {
+        "geometry": {
+            "r_values": "List of radius of curvature values for ROC bends (µm)",
+            "L": "Total target length of the path (µm)",
+            "D": "Target x-coordinate at the end (µm)",
+            "x": "Length of straight sections at ends (µm)",
+            "s": "Radius for S-bend sections (µm)",
+            "width": "Waveguide width (µm)"
+        },
+        "layers": {
+            "waveguide": "Layer for waveguide geometry [layer, datatype]",
+            "text": "Layer for text labels [layer, datatype]"
+        },
+        "text": {
+            "size": "Size of text labels",
+            "offset_left": "Horizontal offset for left text label (µm)",
+            "offset_right": "Horizontal offset for right text label (µm)",
+            "enable": "Flag to enable/disable text labels"
+        },
+        "taper": {
+            "length": "Length of tapers connecting to grating couplers (µm)"
+        },
+        "grating_coupler": {
+            "type": "Type of grating coupler component to use",
+            "n_periods": "Number of grating periods",
+            "period": "Grating period (µm)",
+            "fill_factor": "Filling factor of the grating teeth (0.0-1.0)",
+            "taper_length": "Length of the taper section in the grating coupler (µm)",
+            "taper_angle": "Angle of the taper section (degrees)",
+            "wavelength": "Design wavelength for the grating coupler (µm)",
+            "fiber_angle": "Angle of the optical fiber relative to normal (degrees)",
+            "polarization": "Polarization mode ('te' or 'tm')",
+            "width": "Width of the grating coupler waveguide (µm)"
+        },
+        "array": {
+            "spacing": "Spacing between devices in the array (µm)"
+        }
+    }
+}
