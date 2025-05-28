@@ -13,15 +13,15 @@
             "text": [3, 0],
             "die_grid": [100, 0],
             "die_box": [100, 0],
-            "die_text": [103, 0],
+            "die_text": [104, 0],
             "e_beam_marker": [102, 0]
         },
-        "text": {
+        "device_text": {
             "size": 20,
             "offset_left": -175,
             "offset_right": 175,
             "enable": true,
-            "layer": [3, 0]
+            "layer": [103, 0]
         },
         "taper": {
             "length": 20

@@ -123,13 +123,14 @@ def build_component_from_params(params):
     s = params["geometry"]["s"]
     width = params["geometry"]["width"]
     layer = tuple(params["layers"]["waveguide"])
-    # Use device text layer from text section if specified, otherwise fall back to global text layer
-    text_layer = tuple(params["text"].get("layer", params["layers"]["text"]))
-    text_size = params["text"]["size"]
-    text_offset_left = params["text"]["offset_left"]
-    text_offset_right = params["text"]["offset_right"]
+    # Use device text layer from device_text section if specified, otherwise fall back to global text layer
+    device_text = params.get("device_text", {})
+    text_layer = tuple(device_text.get("layer", params["layers"].get("text", [3, 0])))
+    text_size = device_text.get("size", 20)
+    text_offset_left = device_text.get("offset_left", -175)
+    text_offset_right = device_text.get("offset_right", 175)
+    enable_text = device_text.get("enable", True)
     taper_length = params["taper"]["length"]
-    enable_text = params["text"]["enable"]
     grating_coupler_config = params["grating_coupler"]
     
     cross_section = gf.cross_section.strip(width=width, layer=layer)
@@ -302,8 +303,9 @@ for i, r in enumerate(r_values):
 
 def get_component():
     """Function for placement system compatibility - returns (component, die_name)"""
-    # Return the array component and its width-based die name
-    return array_comp, f"w{width_nm}"
+    die_name = f"w{width_nm}"
+    array_with_grid = add_die_box_with_grid(array_comp, die_name=die_name, params=params)
+    return array_with_grid, die_name
 
 def p_cascades():
     """Alternative function name for placement system compatibility - returns (component, die_name)"""

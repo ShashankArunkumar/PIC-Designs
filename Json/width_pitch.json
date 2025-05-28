@@ -4,7 +4,7 @@
     "die_outline": [100, 0],
     "grid": [100, 0],
     "e_beam_marker": [102, 0],
-    "die_text": [103, 0],
+    "die_text": [104, 0],
     "marker": [10, 0],
     "die_grid": [100, 0],
     "die_box": [5, 0]
@@ -70,7 +70,8 @@
   "device_text": {
     "offset_x": -30,
     "offset_y": 0,
-    "enable_text": true
+    "enable_text": true,
+    "layer": [103, 0]
   },
   "output": {
     "gds_path": "build/gds/wp_cascades.gds",
