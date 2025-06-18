@@ -29,7 +29,7 @@
         "grating_coupler": {
             "type": "grating_coupler_elliptical_uniform",
             "n_periods": 40,
-            "period": 0.532,
+            "period": 0.34,
             "fill_factor": 0.5,
             "taper_length": 26.0,
             "taper_angle": 30.0,

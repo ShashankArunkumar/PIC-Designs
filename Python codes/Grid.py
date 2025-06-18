@@ -1,3 +1,6 @@
+import os
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc file creation
+
 import gdsfactory as gf
 import numpy as np
 import json

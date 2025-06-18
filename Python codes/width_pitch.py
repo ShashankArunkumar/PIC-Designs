@@ -142,7 +142,13 @@ def p_cascades():
     cascade_spacing = p_cascades_params["cascade_spacing"]
     x0 = p_cascades_params["x0"]
     y0 = p_cascades_params["y0"]
+      # Create the top-level component
     c = gf.Component("wp_cascades")
+    
+    # Create an intermediate "cascades" component to contain all individual cascades
+    cascades_component = gf.Component("cascades")
+    
+    # Create individual cascades and add them to the cascades component
     for j, period in enumerate(periods):
         cascade_name = f"{p_cascades_params['cascade_name_prefix']}{int(period*1000)}"
         cascade = gf.Component(cascade_name)
@@ -152,9 +158,16 @@ def p_cascades():
             dev_ref = cascade.add_ref(dev_cell)
             dev_ref.move((i * x_offset, -i * y_spacing))
             dev_ref.name = dev_name
-        cascade_ref = c.add_ref(cascade)
-        cascade_ref.move((x0, y0 - j * cascade_spacing))
-        cascade_ref.name = cascade_name
+        
+        # Add each cascade to the intermediate cascades component
+        cascade_ref = cascades_component.add_ref(cascade)
+        cascade_ref.move((0, -j * cascade_spacing))  # Position cascades vertically within the group
+        cascade_ref.name = cascade_name    # Add the cascades component to the top-level component
+    cascades_ref = c.add_ref(cascades_component)
+    cascades_ref.name = "cascades"
+    
+    print(f"Debug: Cascades positioned at origin")
+    print(f"Debug: Component bbox: {c.bbox()}")
     die_name = die_text_params["name_prefix"] + "1"
     return c, die_name
 
@@ -180,8 +193,7 @@ def add_die_box_with_grid(component, die_name=None):
     die_height = ((int((height // grid_size) + 1) if height % grid_size != 0 else int(height // grid_size)) + 1) * grid_size
     n_x = int(die_width // grid_size)
     n_y = int(die_height // grid_size)
-    grid_line_width = die_box_params.get("grid_line_width", 0.5)
-    # Center the die at (0,0): shift the component so its bbox center is at (0,0)
+    grid_line_width = die_box_params.get("grid_line_width", 0.5)    # Center the die at (0,0): shift the component so its bbox center is at (0,0)
     comp_cx = (xmax + xmin) / 2
     comp_cy = (ymax + ymin) / 2
     component.move((-comp_cx, -comp_cy))
@@ -191,6 +203,12 @@ def add_die_box_with_grid(component, die_name=None):
     # Snap die_xmin and die_ymin to exact grid points to avoid floating point errors
     die_xmin = -round(die_width / 2 / grid_size) * grid_size
     die_ymin = -round(die_height / 2 / grid_size) * grid_size
+    
+    # Apply grid offset
+    grid_offset_x = 50.0  # Move grid 50 microns to the right
+    grid_offset_y = 0.0
+    die_xmin += grid_offset_x
+    die_ymin += grid_offset_y
     die_grid = gf.Component("Die_Grid")
     for i in range(n_x + 1):
         x = i * grid_size
@@ -237,7 +255,12 @@ def add_die_box_with_grid(component, die_name=None):
 
 if __name__ == "__main__":
     c, die_name = p_cascades()
+    print(f"Debug: Before die box - Component bbox: {c.bbox()}")
+    
     c = add_die_box_with_grid(c)
+    print(f"Debug: After die box - Component bbox: {c.bbox()}")
+    print(f"Debug: Grid has been moved 50 microns to the right")
+    
     if output_params["show"]:
         c.show()
     c.write_gds(output_params["gds_path"])

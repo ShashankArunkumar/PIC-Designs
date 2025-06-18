@@ -1,11 +1,11 @@
 {
     "parameters": {
         "geometry": {
-            "r": 25,
-            "L": 6600,
-            "D": 4000,
+            "r": 20,
+            "L": 3000,
+            "D": 1600,
             "x": 100,
-            "s": 60,
+            "s": 10,
             "width": 0.3
         },
         "layers": {
@@ -24,7 +24,7 @@
         "grating_coupler": {
             "type": "grating_coupler_elliptical_uniform",
             "n_periods": 40,
-            "period": 0.532,
+            "period": 0.35,
             "fill_factor": 0.5,
             "taper_length": 26.0,
             "taper_angle": 30.0,
@@ -32,6 +32,10 @@
             "fiber_angle": 15.0,
             "polarization": "te",
             "width": 0.5
+        },
+        "array_spacing": {
+            "x_diff": 2200,
+            "y_diff":175
         }
     },    "description": {
         "geometry": {
@@ -66,6 +70,10 @@
             "fiber_angle": "Angle of the optical fiber relative to normal (degrees)",
             "polarization": "Polarization mode ('te' or 'tm')",
             "width": "Width of the grating coupler waveguide (µm)"
+        },
+        "array_spacing": {
+            "x_diff": "Difference in x position between array elements (µm)",
+            "y_diff": "Difference in y position between array elements (µm)"
         }
     }
 }

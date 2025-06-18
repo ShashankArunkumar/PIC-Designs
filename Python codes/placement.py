@@ -60,7 +60,7 @@ def load_width_pitch_component_with_name(py_path, die_number=None):
     # die_name will be 'Die (x)' if die_number is int, or as passed
     return c, f"Die {die_number}" if die_number is not None else die_name
 
-def load_component_with_die(py_path, die_number=None):
+def load_component_with_die(py_path, die_number=None, width=None):
     """Load a component from a Python file, add a die box with the correct die label, and return (component, die_name)."""
     import uuid
     module_name = Path(py_path).stem
@@ -80,12 +80,19 @@ def load_component_with_die(py_path, die_number=None):
             kwargs['name'] = f"{kwargs['name']}_{die_number}"
         return orig_gf_Component(*args, **kwargs)
     gf.Component = UniqueNameComponent
-    try:
-        # Try to call p_cascades() or a similar function, fallback to a generic 'get_component' if present
+    try:        # Try to call p_cascades() or a similar function, fallback to a generic 'get_component' if present
         if hasattr(mod, 'p_cascades'):
-            c, die_name = mod.p_cascades()
+            # Pass width parameter if available
+            if width is not None:
+                c, die_name = mod.p_cascades(width=width)
+            else:
+                c, die_name = mod.p_cascades()
         elif hasattr(mod, 'get_component'):
-            c, die_name = mod.get_component()
+            # Pass width parameter if available
+            if width is not None:
+                c, die_name = mod.get_component(width=width)
+            else:
+                c, die_name = mod.get_component()
         else:
             raise AttributeError(f"No suitable component factory found in {py_path}")
         # Try to call add_die_box_with_grid with die_name=die_number if available
@@ -103,28 +110,65 @@ def place_component_on_grid(grid_component, component, position, name=None):
         ref.name = name
     return ref
 
+def calculate_dynamic_chip_size(placements, margin=2000):
+    """Calculate chip size based on die placements with margin"""
+    if not placements:
+        return [10000, 10000]  # Default fallback
+    
+    # Get all x and y positions
+    x_positions = [p["position"][0] for p in placements]
+    y_positions = [p["position"][1] for p in placements]
+    
+    # Calculate bounds (assuming each die is roughly 3000x3000 microns)
+    die_size_estimate = 3000  # This could be made more precise by loading actual die sizes
+    
+    min_x = min(x_positions) - die_size_estimate/2
+    max_x = max(x_positions) + die_size_estimate/2
+    min_y = min(y_positions) - die_size_estimate/2
+    max_y = max(y_positions) + die_size_estimate/2
+    
+    # Add margin
+    total_width = (max_x - min_x) + 2 * margin
+    total_height = (max_y - min_y) + 2 * margin
+    
+    # Round up to nearest 1000 for clean boundaries
+    chip_width = int((total_width + 999) // 1000) * 1000
+    chip_height = int((total_height + 999) // 1000) * 1000
+    
+    print(f"Calculated dynamic chip size: {chip_width} x {chip_height} microns")
+    return [chip_width, chip_height]
+
 def main():
     import json
-    # Load grid config and create grid
+    # Load grid config and create grid using chip size from Grid.json
     config_path = "Json/Grid.json"
     config = load_config_from_json(config_path)
     if not config:
         print("Failed to load grid configuration.")
         return
-    # Create the grid as a separate component named 'Grid'
-    grid = create_grid_component(config)
-    grid.name = "Grid"
-
+    
+    print(f"Using chip size from Grid.json: {config['chip_size']}")
+    
     # Load placements from placement.json
     with open("Json/placement.json", "r") as f:
         placement_data = json.load(f)
     placements = placement_data["placements"]
-
+    
+    # Create the grid as a separate component named 'Grid'
+    grid = create_grid_component(config)
+    grid.name = "Grid"
+    
     # Create Dies component to hold all dies
     dies_component = gf.Component("Dies")
     die_refs = []
     for placement in placements:
-        component, die_name = load_component_with_die(placement["py_path"], die_number=placement["die_number"])
+        # Extract width parameter if it exists, otherwise use None
+        width = placement.get("width", None)
+        component, die_name = load_component_with_die(
+            placement["py_path"], 
+            die_number=placement["die_number"],
+            width=width
+        )
         # Rename the die cell to Die1, Die2, ...
         component.name = die_name.replace(" ", "")  # e.g., Die1, Die2
         die_ref = dies_component.add_ref(component)
@@ -141,7 +185,7 @@ def main():
     dies_ref.name = "Dies"
 
     # Save the result
-    top_chip.write_gds("build/gds/Metal_Mask.gds")
+    top_chip.write_gds("build/gds/wp_width.gds")
     print("GDS with placed component saved as build/gds/grid_with_placement.gds")
 
     # Show the layout in the viewer

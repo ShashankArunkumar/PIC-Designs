@@ -1,6 +1,8 @@
+import os
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc file creation
+
 import gdsfactory as gf
 import json
-import os
 import copy
 
 def add_die_box_with_grid(component, die_name=None, params=None):
@@ -256,63 +258,92 @@ with open(json_path, 'r') as f:
     config = json.load(f)
 params = config["parameters"]
 
-# Extract width for naming
-width = params["geometry"]["width"]
-width_nm = int(width * 1000)
+# Functions to create components (moved from module level to avoid import-time execution)
 
-# Range of r values from JSON
-r_values = params["geometry"]["r_values"]
+def create_array_components():
+    """Create the array components - moved into function to avoid execution during import"""
+    return create_array_components_with_params(params)
 
-# Create the array component
-array_comp = gf.Component(f"w{width_nm}")
-spacing_config = params["array"]["spacing"]  # Can be single value or list
-components_with_metrics = []
+def create_array_components_with_params(local_params):
+    """Create the array components with custom parameters"""
+    # Extract width for naming
+    width = local_params["geometry"]["width"]
+    width_nm = int(width * 1000)
 
-# Handle both single spacing value and list of spacing values
-if isinstance(spacing_config, (int, float)):
-    # Uniform spacing - use same spacing for all devices
-    spacing_list = [spacing_config] * (len(r_values) - 1)
-elif isinstance(spacing_config, list):
-    # Custom spacing - use provided list
-    spacing_list = spacing_config
-    # If list is shorter than needed, repeat the last value
-    while len(spacing_list) < len(r_values) - 1:
-        spacing_list.append(spacing_list[-1])
-    # If list is longer than needed, truncate it
-    spacing_list = spacing_list[:len(r_values) - 1]
-else:
-    # Fallback to default spacing
-    spacing_list = [200] * (len(r_values) - 1)
+    # Range of r values from JSON
+    r_values = local_params["geometry"]["r_values"]
 
-# Place devices with custom spacing
-current_y_position = 0
-for i, r in enumerate(r_values):
-    # Each ROC element as a cell
-    local_params = copy.deepcopy(params)
-    local_params["geometry"]["r"] = r
-    cell = build_component_from_params(local_params)
-    ref = array_comp.add_ref(cell)
-    ref.move((0, current_y_position))
+    # Create the array component
+    array_comp = gf.Component(f"w{width_nm}")
+    spacing_config = local_params["array"]["spacing"]  # Can be single value or list
+    components_with_metrics = []
+
+    # Handle both single spacing value and list of spacing values
+    if isinstance(spacing_config, (int, float)):
+        # Uniform spacing - use same spacing for all devices
+        spacing_list = [spacing_config] * (len(r_values) - 1)
+    elif isinstance(spacing_config, list):
+        # Custom spacing - use provided list
+        spacing_list = spacing_config
+        # If list is shorter than needed, repeat the last value
+        while len(spacing_list) < len(r_values) - 1:
+            spacing_list.append(spacing_list[-1])
+        # If list is longer than needed, truncate it
+        spacing_list = spacing_list[:len(r_values) - 1]
+    else:
+        # Fallback to default spacing
+        spacing_list = [200] * (len(r_values) - 1)    
+    current_y_position = 0
+    for i, r in enumerate(r_values):
+        # Each ROC element as a cell
+        component_params = copy.deepcopy(local_params)
+        component_params["geometry"]["r"] = r
+        cell = build_component_from_params(component_params)
+        ref = array_comp.add_ref(cell)
+        ref.move((0, current_y_position))
+        
+        # Collect path metrics for uniformity check
+        components_with_metrics.append(cell)
+        
+        # Update position for next device (except for the last device)
+        if i < len(r_values) - 1:
+            current_y_position += spacing_list[i]
     
-    # Collect path metrics for uniformity check
-    components_with_metrics.append(cell)
-    
-    # Update position for next device (except for the last device)
-    if i < len(r_values) - 1:
-        current_y_position += spacing_list[i]
+    return array_comp, components_with_metrics
 
-def get_component():
+def get_component(width=None):
     """Function for placement system compatibility - returns (component, die_name)"""
+    
+    # Use provided width or fall back to default from JSON
+    local_params = copy.deepcopy(params)
+    if width is not None:
+        local_params["geometry"]["width"] = width
+    
+    # Calculate width in nm for naming
+    component_width = local_params["geometry"]["width"]
+    width_nm = int(component_width * 1000)
+    
+    # Create array components with the specified width
+    array_comp, components_with_metrics = create_array_components_with_params(local_params)
+    
     die_name = f"w{width_nm}"
-    array_with_grid = add_die_box_with_grid(array_comp, die_name=die_name, params=params)
+    array_with_grid = add_die_box_with_grid(array_comp, die_name=die_name, params=local_params)
     return array_with_grid, die_name
 
-def p_cascades():
+def p_cascades(width=None):
     """Alternative function name for placement system compatibility - returns (component, die_name)"""
-    return get_component()
+    return get_component(width=width)
 
 # Show or export the array
 if __name__ == "__main__":
+    # Create the array components
+    array_comp, components_with_metrics = create_array_components()
+    
+    # Extract width for naming
+    width = params["geometry"]["width"]
+    width_nm = int(width * 1000)
+    r_values = params["geometry"]["r_values"]
+    
     # Check that path lengths and x_diff values are uniform for different r values
     if len(components_with_metrics) > 1:
         first_metrics = components_with_metrics[0]._path_metrics
