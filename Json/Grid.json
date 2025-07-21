@@ -9,7 +9,7 @@
     "corner_labels_layer": [97, 0]
   },
   "component_name": "Grid",
-  "chip_size": [20000, 20000],
+  "chip_size": [10000, 10000],
   "grid_settings": {
     "grid_box_size": 500,
     "grid_line_width": 0.002,

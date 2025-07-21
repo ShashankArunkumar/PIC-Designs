@@ -75,7 +75,9 @@
   },
   "output": {
     "gds_path": "build/gds/wp_cascades1.gds",
+    "svg_path": "build/svg/wp_cascades1.svg",
     "show": true,
-    "log": true
+    "log": true,
+    "export_svg": true
   }
 }

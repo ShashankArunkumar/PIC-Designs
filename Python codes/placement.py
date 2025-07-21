@@ -1,5 +1,6 @@
 import gdsfactory as gf
 import importlib
+import importlib.util
 import sys
 from pathlib import Path
 
@@ -63,11 +64,47 @@ def load_width_pitch_component_with_name(py_path, die_number=None):
 def load_component_with_die(py_path, die_number=None, width=None):
     """Load a component from a Python file, add a die box with the correct die label, and return (component, die_name)."""
     import uuid
-    module_name = Path(py_path).stem
+    import importlib.util
+    import os
+    
+    # Handle both relative and absolute paths, and ensure proper path construction
+    if not py_path.endswith('.py'):
+        py_path = py_path + '.py'
+    
+    # Convert to Path object for easier manipulation
+    path_obj = Path(py_path)
+    
+    # If it's already an absolute path, use it as is
+    if path_obj.is_absolute():
+        resolved_path = path_obj
+    else:
+        # For relative paths, we need to resolve them properly
+        # Get the directory where this script is located (should be "Python codes")
+        script_dir = Path(__file__).parent
+        
+        # If the path starts with "Python codes/", we need to go up one level
+        if py_path.startswith('Python codes/') or py_path.startswith('Python codes\\'):
+            # Remove the "Python codes/" prefix and resolve from parent directory
+            relative_part = py_path[len('Python codes/'):].replace('\\', '/')
+            resolved_path = script_dir.parent / 'Python codes' / relative_part
+        else:
+            # Path is relative to current script directory
+            resolved_path = script_dir / py_path
+    
+    # Convert back to string for the rest of the function
+    py_path_str = str(resolved_path)
+    
+    print(f"Debug: Original py_path: {py_path}")
+    print(f"Debug: Resolved py_path: {py_path_str}")
+    print(f"Debug: File exists: {resolved_path.exists()}")
+    
+    module_name = resolved_path.stem
     if module_name in sys.modules:
         mod = sys.modules[module_name]
     else:
-        spec = importlib.util.spec_from_file_location(module_name, py_path)
+        spec = importlib.util.spec_from_file_location(module_name, py_path_str)
+        if spec is None:
+            raise FileNotFoundError(f"Cannot find module file: {py_path_str}")
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
     # Instead of a random uuid, use the die_number for subcell uniqueness
@@ -80,8 +117,15 @@ def load_component_with_die(py_path, die_number=None, width=None):
             kwargs['name'] = f"{kwargs['name']}_{die_number}"
         return orig_gf_Component(*args, **kwargs)
     gf.Component = UniqueNameComponent
-    try:        # Try to call p_cascades() or a similar function, fallback to a generic 'get_component' if present
-        if hasattr(mod, 'p_cascades'):
+    try:        
+        # Check if this is width_pitch.py - it doesn't need width parameter since it does internal width sweeping
+        if module_name == 'width_pitch':
+            if hasattr(mod, 'p_cascades'):
+                c, die_name = mod.p_cascades()
+            else:
+                raise AttributeError(f"width_pitch.py must have a p_cascades function")
+        # For other components, try to call p_cascades() or get_component() with width if available
+        elif hasattr(mod, 'p_cascades'):
             # Pass width parameter if available
             if width is not None:
                 c, die_name = mod.p_cascades(width=width)
@@ -185,7 +229,7 @@ def main():
     dies_ref.name = "Dies"
 
     # Save the result
-    top_chip.write_gds("build/gds/wp_width.gds")
+    top_chip.write_gds("build/gds/17_07_2025.gds")
     print("GDS with placed component saved as build/gds/grid_with_placement.gds")
 
     # Show the layout in the viewer

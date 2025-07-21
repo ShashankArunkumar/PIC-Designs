@@ -1,40 +1,20 @@
 {
   "placements": [
     {
-      "py_path": "Python codes/ROC_array.py",
+      "py_path": "Python codes/width_pitch.py",
       "die_number": 1,
-      "position": [-3000, 3000],
-      "width": 0.300
+      "position": [-50, 1000]
+    
     },
     {
-      "py_path": "Python codes/ROC_array.py",
+      "py_path": "Python codes/width_pitch.py",
       "die_number": 2,
-      "position": [3000, 3000],
-      "width": 0.320
+      "position": [-50, -2000]
     },
     {
-      "py_path": "Python codes/ROC_array.py",
+      "py_path": "Python codes/modified_width_pitch.py",
       "die_number": 3,
-      "position": [-3000, 0],
-      "width": 0.340
-    },
-    {
-      "py_path": "Python codes/ROC_array.py",
-      "die_number": 4,
-      "position": [3000, 0],
-      "width": 0.360
-    },
-    {
-      "py_path": "Python codes/ROC_array.py",
-      "die_number": 5,
-      "position": [-3000, -3000],
-      "width": 0.380
-    },
-    {
-      "py_path": "Python codes/ROC_array.py",
-      "die_number": 6,
-      "position": [3000, -3000],
-      "width": 0.400
+      "position": [-50, 3000]
     }
   ]
 }

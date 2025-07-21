@@ -263,4 +263,7 @@ if __name__ == "__main__":
     
     if output_params["show"]:
         c.show()
+    
+    # Export GDS file
     c.write_gds(output_params["gds_path"])
+    print(f"GDS file saved to: {output_params['gds_path']}")
