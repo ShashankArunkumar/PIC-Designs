@@ -1,4 +1,29 @@
 import gdsfactory as gf
+import json
+
+# Load variables from cell.json
+with open('c:/Users/Admin/Desktop/Codes for Design/Depot/Json/cell.json', 'r') as f:
+    config = json.load(f)
+
+die_size = config['die']['size']  # Die box dimensions in microns
+grid_size = config['die']['grid_size']  # Grid box size in microns
+
+grid_layer = tuple(config['layers']['grid'])  # Layer for the grid lines
+text_layer = tuple(config['layers']['text'])  # Layer for the text
+arrow_layer = tuple(config['layers']['arrow'])  # Layer for the arrows
+edge_box_layer = tuple(config['layers']['edge_box'])  # Layer for the edge boxes
+l_shape_layer = tuple(config['layers']['l_shape'])  # Layer for the L shape squares
+
+box_size = config['dimensions']['box_size']  # Size of the edge box in microns
+offset = config['dimensions']['offset']  # Distance from the border in microns
+square_size = config['dimensions']['square_size']  # Size of each square in microns
+spacing = config['dimensions']['spacing']  # Center-to-center distance in microns
+
+text_content = config['text']['content']  # Text content
+text_size = config['text']['size']  # Text size
+text_position = config['text']['position']  # Text position
+
+arrow_positions = config['arrows']['positions']  # Arrow positions and angles
 
 def create_die_with_grid():
     """
@@ -7,11 +32,6 @@ def create_die_with_grid():
     Returns:
         gf.Component: The grid component.
     """
-    die_size = (600, 600)  # Die box dimensions in microns
-    grid_size = 200  # Grid box size in microns
-
-    grid_layer = (2, 0)  # Layer for the grid lines
-
     # Create the top-level component for the device block
     device_block = gf.Component("Device_Block")
 
@@ -36,7 +56,6 @@ def create_die_with_grid():
     device_markers = gf.Component("Device_Markers")
 
     # Add text "A1" to the device markers component
-    text_layer = (3, 0)  # Layer for the text
     text = gf.components.text(text="A1", size=60, layer=text_layer)
     device_markers.add_ref(text).move((70, -136))
 
@@ -44,7 +63,7 @@ def create_die_with_grid():
     arrow = gf.Component("Arrow")
     arrow.add_polygon([
         (0, 15), (80, 10), (80, 40), (120,0 ), (80, -40), (80, -10), (0, -15)
-    ], layer=(4, 0))
+    ], layer=arrow_layer)
 
     # Rotate the arrow by 45 degrees and place it in the bottom-left box
     arrow_45 = device_markers.add_ref(arrow)
@@ -56,16 +75,10 @@ def create_die_with_grid():
     arrow_135.rotate(135)
     arrow_135.move((488, -488))
 
-    # Define the layer for alignment boxes
-    edge_box_layer = (5, 0)  # Layer for the edge boxes
-
     # Create a separate component for alignment boxes
     alignment = gf.Component("Alignment")
 
     # Add 8x8 boxes at a distance of 20 microns from the edges of the 600x600 box
-    box_size = 8  # Size of the edge box in microns
-    offset = 20  # Distance from the border in microns
-
     # Adjust alignment boxes to be 20 microns away from the gridlines at the corners of the four 200x200 boxes
     # Add alignment boxes to all four corners of each of the four 200x200 boxes
     # Correct alignment boxes to be in the correct corners of the 200x200 boxes
@@ -109,11 +122,6 @@ def create_die_with_grid():
     l_element = gf.Component("L_Element")
 
     # Add three 0.5x0.5 micron squares in an L shape to the L element
-    l_shape_layer = (6, 0)  # Layer for the L shape squares
-    square_size = 0.5  # Size of each square in microns
-    spacing = 9  # Center-to-center distance in microns
-
-    # Bottom-left square
     l_element.add_ref(
         gf.components.rectangle(size=(square_size, square_size), layer=l_shape_layer)
     ).move((0, 0))
