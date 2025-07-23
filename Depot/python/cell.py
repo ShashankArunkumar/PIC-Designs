@@ -1,5 +1,28 @@
 import gdsfactory as gf
 
+# Define the Devise_origin point
+Devise_origin = (250, -250)
+
+# Define a new NW_origin point
+NW_origin = (Devise_origin[0] - 4.75, Devise_origin[1] - 4.75)
+
+def create_filled_box():
+    """
+    Create a 0.5x0.5 micron filled box renamed as NW_marker.
+
+    Returns:
+        gf.Component: The filled box component.
+    """
+    filled_box = gf.Component("NW_marker")
+    filled_box.add_polygon([
+        (0, 0),
+        (0.5, 0),
+        (0.5, 0.5),
+        (0, 0.5),
+        (0, 0)
+    ], layer=(3, 0))
+    return filled_box
+
 def create_outline():
     """
     Create the outline of a 500x500 box with the top-left corner at the origin.
@@ -109,27 +132,6 @@ def create_outline():
 
     # Return the top-level component
     return top_level
-
-# Define a 0.5x0.5 micron filled box
-def create_filled_box():
-    """
-    Create a 0.5x0.5 micron filled box.
-
-    Returns:
-        gf.Component: The filled box component.
-    """
-    filled_box = gf.Component("Filled_Box")
-    filled_box.add_polygon([
-        (0, 0),
-        (0.5, 0),
-        (0.5, 0.5),
-        (0, 0.5),
-        (0, 0)
-    ], layer=(3, 0))
-    return filled_box
-
-# Define the Devise_origin point
-Devise_origin = (250, -250)
 
 if __name__ == "__main__":
     # Create the outline
