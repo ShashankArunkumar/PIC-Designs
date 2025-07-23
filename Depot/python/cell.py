@@ -1,155 +1,139 @@
 import gdsfactory as gf
-import json
 
-# Load variables from cell.json
-with open('c:/Users/Admin/Desktop/Codes for Design/Depot/Json/cell.json', 'r') as f:
-    config = json.load(f)
-
-die_size = config['die']['size']  # Die box dimensions in microns
-grid_size = config['die']['grid_size']  # Grid box size in microns
-
-grid_layer = tuple(config['layers']['grid'])  # Layer for the grid lines
-text_layer = tuple(config['layers']['text'])  # Layer for the text
-arrow_layer = tuple(config['layers']['arrow'])  # Layer for the arrows
-edge_box_layer = tuple(config['layers']['edge_box'])  # Layer for the edge boxes
-l_shape_layer = tuple(config['layers']['l_shape'])  # Layer for the L shape squares
-
-box_size = config['dimensions']['box_size']  # Size of the edge box in microns
-offset = config['dimensions']['offset']  # Distance from the border in microns
-square_size = config['dimensions']['square_size']  # Size of each square in microns
-spacing = config['dimensions']['spacing']  # Center-to-center distance in microns
-
-text_content = config['text']['content']  # Text content
-text_size = config['text']['size']  # Text size
-text_position = config['text']['position']  # Text position
-
-arrow_positions = config['arrows']['positions']  # Arrow positions and angles
-
-def create_die_with_grid():
+def create_outline():
     """
-    Create a grid of 200x200 micron boxes within a 600x600 micron area on a separate layer.
+    Create the outline of a 500x500 box with the top-left corner at the origin.
 
     Returns:
-        gf.Component: The grid component.
+        gf.Component: The outline component.
     """
-    # Create the top-level component for the device block
-    device_block = gf.Component("Device_Block")
+    # Create a new component for the outline
+    outline = gf.Component("500_box")
 
-    # Add the grid as a subcomponent under the device block
-    grid_component = gf.Component("Grid")
+    # Define the size of the box
+    width, height = 500, 500
 
-    # Add the grid lines with the top-left corner as the origin
-    for x in range(0, die_size[0] + 1, grid_size):
-        grid_component.add_ref(
-            gf.components.rectangle(size=(0.5, die_size[1]), layer=grid_layer)
-        ).move((x - 0.25, -die_size[1]))  # Center the vertical gridline
+    # Adjust the coordinates to center the rectangle, accounting for the border width
+    border_width = 0.005
 
-    for y in range(0, die_size[1] + 1, grid_size):
-        grid_component.add_ref(
-            gf.components.rectangle(size=(die_size[0], 0.5), layer=grid_layer)
-        ).move((0, -y - 0.25))  # Center the horizontal gridline
+    # Top edge
+    outline.add_polygon([
+        (0, border_width / 2),
+        (width, border_width / 2),
+        (width, -border_width / 2),
+        (0, -border_width / 2),
+        (0, border_width / 2)
+    ], layer=(1, 0))
 
-    # Add the grid component to the device block
-    device_block.add_ref(grid_component)
+    # Bottom edge
+    outline.add_polygon([
+        (0, -height + border_width / 2),
+        (width, -height + border_width / 2),
+        (width, -height - border_width / 2),
+        (0, -height - border_width / 2),
+        (0, -height + border_width / 2)
+    ], layer=(1, 0))
 
-    # Create a separate component for device markers
-    device_markers = gf.Component("Device_Markers")
+    # Left edge
+    outline.add_polygon([
+        (border_width / 2, 0),
+        (-border_width / 2, 0),
+        (-border_width / 2, -height),
+        (border_width / 2, -height),
+        (border_width / 2, 0)
+    ], layer=(1, 0))
 
-    # Add text "A1" to the device markers component
-    text = gf.components.text(text="A1", size=60, layer=text_layer)
-    device_markers.add_ref(text).move((70, -136))
+    # Right edge
+    outline.add_polygon([
+        (width - border_width / 2, 0),
+        (width + border_width / 2, 0),
+        (width + border_width / 2, -height),
+        (width - border_width / 2, -height),
+    ], layer=(1, 0))
 
-    # Create a horizontal arrow shape
-    arrow = gf.Component("Arrow")
-    arrow.add_polygon([
-        (0, 15), (80, 10), (80, 40), (120,0 ), (80, -40), (80, -10), (0, -15)
-    ], layer=arrow_layer)
+    # Define a reusable marker component
+    def create_marker():
+        """
+        Create a single 8x8 marker box.
 
-    # Rotate the arrow by 45 degrees and place it in the bottom-left box
-    arrow_45 = device_markers.add_ref(arrow)
-    arrow_45.rotate(45)
-    arrow_45.move((112, -488))
+        Returns:
+            gf.Component: The marker component.
+        """
+        marker = gf.Component("Marker")
+        marker_size = 8
+        marker.add_polygon([
+            (-marker_size / 2, marker_size / 2),
+            (marker_size / 2, marker_size / 2),
+            (marker_size / 2, -marker_size / 2),
+            (-marker_size / 2, -marker_size / 2),
+            (-marker_size / 2, marker_size / 2)
+        ], layer=(2, 0))
+        return marker
 
-    # Rotate the arrow by 135 degrees and place it in the bottom-right box
-    arrow_135 = device_markers.add_ref(arrow)
-    arrow_135.rotate(135)
-    arrow_135.move((488, -488))
+    # Create the marker component
+    marker = create_marker()
 
-    # Create a separate component for alignment boxes
-    alignment = gf.Component("Alignment")
+    # Define marker positions
+    marker_positions = [
+        (20, -20),(20,20),(-20,20),(-20,-20),  # Top-left corner
+        (480, -20),(520,20),(520,-20),(480,20),  # Top-right corner
+        (20, -480),(-20,-520),(20,-520),(-20,-480),  # Bottom-left corner
+        (480, -480),(520,-480),(520,-520),(480,-520),  # Bottom-right corner
+    ]
 
-    # Add 8x8 boxes at a distance of 20 microns from the edges of the 600x600 box
-    # Adjust alignment boxes to be 20 microns away from the gridlines at the corners of the four 200x200 boxes
-    # Add alignment boxes to all four corners of each of the four 200x200 boxes
-    # Correct alignment boxes to be in the correct corners of the 200x200 boxes
-    # Adjust alignment boxes to remove specific markers
-    for i in range(2):  # Iterate over rows (top and bottom)
-        for j in range(2):  # Iterate over columns (left and right)
-            base_x = j * 2 * grid_size  # Adjust for correct column spacing
-            base_y = -i * 2 * grid_size  # Adjust for correct row spacing
+    # Create the top-level component
+    top_level = gf.Component("Top_Level")
 
-            # Top-left corner of the 200x200 box (skip for bottom-right box)
-            if not (i == 1 and j == 1):
-                alignment.add_ref(
-                    gf.components.rectangle(size=(box_size, box_size), layer=edge_box_layer)
-                ).move((base_x + offset, base_y - offset))
+    # Add the outline as a subcomponent of the top-level component
+    outline_ref = top_level.add_ref(outline)
 
-            # Top-right corner of the 200x200 box (skip for bottom-left box)
-            if not (i == 1 and j == 0):
-                alignment.add_ref(
-                    gf.components.rectangle(size=(box_size, box_size), layer=edge_box_layer)
-                ).move((base_x + grid_size - offset - box_size, base_y - offset))
+    # Add markers as subcomponents of the top-level component
+    for position in marker_positions:
+        top_level.add_ref(marker).move(position)
 
-            # Bottom-left corner of the 200x200 box (skip for top-right box)
-            if not (i == 0 and j == 1):
-                alignment.add_ref(
-                    gf.components.rectangle(size=(box_size, box_size), layer=edge_box_layer)
-                ).move((base_x + offset, base_y - grid_size + offset))
+    # Create the filled box component
+    filled_box = create_filled_box()
 
-            # Bottom-right corner of the 200x200 box (skip for top-left box)
-            if not (i == 0 and j == 0):
-                alignment.add_ref(
-                    gf.components.rectangle(size=(box_size, box_size), layer=edge_box_layer)
-                ).move((base_x + grid_size - offset - box_size, base_y - grid_size + offset))
+    # Define positions relative to Devise_origin
+    filled_box_positions = [
+        (Devise_origin[0] - 4.5, Devise_origin[1] - 4.5),
+        (Devise_origin[0] - 4.5, Devise_origin[1] + 4.5),
+        (Devise_origin[0] + 4.5, Devise_origin[1] - 4.5),
+        (Devise_origin[0] - 4.5, Devise_origin[1] - 8),
+        (Devise_origin[0] - 8, Devise_origin[1] - 4.5)
+    ]
 
-    # Add the alignment component to the device markers hierarchy
-    device_markers.add_ref(alignment)
+    # Add filled boxes to the top-level component
+    for position in filled_box_positions:
+        top_level.add_ref(filled_box).move(position)
 
-    # Add the device markers component to the device block
-    device_block.add_ref(device_markers)
+    # Return the top-level component
+    return top_level
 
-    # Create a separate component for the L element
-    l_element = gf.Component("L_Element")
+# Define a 0.5x0.5 micron filled box
+def create_filled_box():
+    """
+    Create a 0.5x0.5 micron filled box.
 
-    # Add three 0.5x0.5 micron squares in an L shape to the L element
-    l_element.add_ref(
-        gf.components.rectangle(size=(square_size, square_size), layer=l_shape_layer)
-    ).move((0, 0))
+    Returns:
+        gf.Component: The filled box component.
+    """
+    filled_box = gf.Component("Filled_Box")
+    filled_box.add_polygon([
+        (0, 0),
+        (0.5, 0),
+        (0.5, 0.5),
+        (0, 0.5),
+        (0, 0)
+    ], layer=(3, 0))
+    return filled_box
 
-    # Bottom-right square
-    l_element.add_ref(
-        gf.components.rectangle(size=(square_size, square_size), layer=l_shape_layer)
-    ).move((spacing, 0))
-
-    # Top-left square
-    l_element.add_ref(
-        gf.components.rectangle(size=(square_size, square_size), layer=l_shape_layer)
-    ).move((0, spacing))
-
-    # Move the L element to the center of the middle 200x200 box
-    center_x = die_size[0] / 2 - spacing / 2
-    center_y = -die_size[1] / 2  - spacing / 2
-    l_element_ref = device_markers.add_ref(l_element)
-    l_element_ref.move((center_x, center_y))
-
-    # Define NW_origin as the bottom-left corner of the bottom-left box of the L element
-    NW_origin = (center_x, center_y)
-
-    return device_block
+# Define the Devise_origin point
+Devise_origin = (250, -250)
 
 if __name__ == "__main__":
-    # Generate the grid
-    grid = create_die_with_grid()
+    # Create the outline
+    outline = create_outline()
 
-    # Display the grid
-    grid.show()
+    # Display the outline
+    outline.show()
