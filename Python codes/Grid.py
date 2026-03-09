@@ -5,6 +5,16 @@ import gdsfactory as gf
 import numpy as np
 import json
 
+# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+try:
+    gf.get_active_pdk()
+except Exception:
+    try:
+        gf.gpdk.PDK.activate()
+    except Exception:
+        from gdsfactory.generic_tech import get_generic_pdk
+        get_generic_pdk().activate()
+
 def load_config_from_json(config_path: str) -> dict:
     """Load grid configuration from JSON file."""
     try:

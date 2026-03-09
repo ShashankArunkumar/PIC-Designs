@@ -2,6 +2,16 @@ import gdsfactory as gf
 import numpy as np
 import uuid  # Add this import at the top of the file
 
+# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+try:
+    gf.get_active_pdk()
+except Exception:
+    try:
+        gf.gpdk.PDK.activate()
+    except Exception:
+        from gdsfactory.generic_tech import get_generic_pdk
+        get_generic_pdk().activate()
+
 def grating_waveguide(name, wg_width, angle, length):
     """
     Create a waveguide with grating couplers on both ends and text annotations.

@@ -7,6 +7,16 @@ import numpy as np
 import json
 from typing import Tuple
 
+# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+try:
+    gf.get_active_pdk()
+except Exception:
+    try:
+        gf.gpdk.PDK.activate()
+    except Exception:
+        from gdsfactory.generic_tech import get_generic_pdk
+        get_generic_pdk().activate()
+
 # Define global parameter
 n = 0.7
 

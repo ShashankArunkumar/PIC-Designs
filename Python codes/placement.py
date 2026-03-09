@@ -4,6 +4,16 @@ import importlib.util
 import sys
 from pathlib import Path
 
+# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+try:
+    gf.get_active_pdk()
+except Exception:
+    try:
+        gf.gpdk.PDK.activate()
+    except Exception:
+        from gdsfactory.generic_tech import get_generic_pdk
+        get_generic_pdk().activate()
+
 # Import the grid creation function from Grid.py
 from Grid import load_config_from_json, create_grid_component
 

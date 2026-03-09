@@ -5,6 +5,16 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc file creation
 import gdsfactory as gf
 import json
 
+# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+try:
+    gf.get_active_pdk()
+except Exception:
+    try:
+        gf.gpdk.PDK.activate()
+    except Exception:
+        from gdsfactory.generic_tech import get_generic_pdk
+        get_generic_pdk().activate()
+
 def create_box(name, width, height, layer=(69, 0)):
     """Create a single box component with specified dimensions."""
     c = gf.Component(name)
