@@ -161,6 +161,46 @@ def create_coordinate_markers_component(chip_size, marker_config, grid_box_size,
         
     return c
 
+
+def create_axis_coordinate_markers_component(chip_size, marker_config, grid_box_size, layer_marker_boxes, layer_marker_text) -> gf.Component:
+    """Creates coordinate markers on y=250, y=-250 (varying x: ...-750,-250,250,750...) and x=-250, x=250 (varying y: ...-750,-250,250,750...)."""
+    c = gf.Component("axis_coordinate_markers")
+    print(f"Adding axis coordinate markers (Layers {layer_marker_boxes}, {layer_marker_text})...")
+
+    marker_size = marker_config.get("marker_size", 20)
+    text_size = marker_config.get("text_size", 10)
+    text_y_offset = marker_config.get("text_y_offset", -15)
+    spacing = 500  # 500 micron spacing
+
+    # Calculate max number of steps needed
+    max_steps = int(chip_size[0] / spacing) + 1
+
+    # Horizontal lines: y = 250 and y = -250
+    for y_m in [250, -250]:
+        for i in range(-max_steps, max_steps + 1):
+            x_m = 250 + i * spacing
+            if abs(x_m) < chip_size[0]/2:
+                marker = c << gf.components.rectangle(size=(marker_size, marker_size), layer=layer_marker_boxes, centered=True)
+                marker.move((x_m, y_m))
+                ct = f"({int(x_m)},{int(y_m)})"
+                txt = c << gf.components.text(text=ct, size=text_size, layer=layer_marker_text, justify='center')
+                txt.move((x_m, y_m + text_y_offset))
+
+    # Vertical lines: x = -250 and x = 250
+    max_steps_y = int(chip_size[1] / spacing) + 1
+    for x_m in [-250, 250]:
+        for i in range(-max_steps_y, max_steps_y + 1):
+            y_m = 250 + i * spacing
+            if abs(y_m) < chip_size[1]/2:
+                marker = c << gf.components.rectangle(size=(marker_size, marker_size), layer=layer_marker_boxes, centered=True)
+                marker.move((x_m, y_m))
+                ct = f"({int(x_m)},{int(y_m)})"
+                txt = c << gf.components.text(text=ct, size=text_size, layer=layer_marker_text, justify='center')
+                txt.move((x_m, y_m + text_y_offset))
+
+    return c
+
+
 def create_ebeam_field_markers_component(chip_size, ebeam_config, layer_ebeam_field_markers) -> gf.Component:
     """Creates the E-beam field markers component."""
     c = gf.Component("ebeam_field_markers")
@@ -270,6 +310,9 @@ def create_grid_component(config: dict) -> gf.Component:
     
     coord_markers_comp = create_coordinate_markers_component(chip_size, marker_config, grid_box_size, layer_marker_boxes, layer_marker_text)
     top_level_cell << coord_markers_comp
+
+    axis_coord_markers_comp = create_axis_coordinate_markers_component(chip_size, marker_config, grid_box_size, layer_marker_boxes, layer_marker_text)
+    top_level_cell << axis_coord_markers_comp
     
     ebeam_markers_comp = create_ebeam_field_markers_component(chip_size, ebeam_config, layer_ebeam_field_markers)
     top_level_cell << ebeam_markers_comp

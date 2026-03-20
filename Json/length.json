@@ -1,11 +1,9 @@
 {
     "parameters": {
         "geometry": {
-            "r": 20,
-            "L": 3000,
-            "D": 1600,
-            "x": 100,
-            "s": 10,
+            "L": 1000,
+            "D": 600,
+            "bend_radius": 10,
             "width": 0.3
         },
         "layers": {
@@ -14,25 +12,20 @@
         },
         "text": {
             "size": 20,
-            "offset_left": -175,
-            "offset_right": 175,
+            "offset_left": -150,
+            "offset_right": 150,
             "enable": true
         },
         "taper": {
             "length": 20
         },
-        "grating_coupler_model": "GC_1550_TE",
-        "array_spacing": {
-            "x_diff": 2200,
-            "y_diff":175
-        }
-    },    "description": {
+        "grating_coupler_model": "GC_1550_TE"
+    },
+    "description": {
         "geometry": {
-            "r": "Radius of curvature for ROC bends (µm)",
-            "L": "Total target length of the path (µm)",
-            "D": "Target x-coordinate at the end (µm)",
-            "x": "Length of straight sections at ends (µm)",
-            "s": "Radius for S-bend sections (µm)",
+            "L": "Constraint used in solver with z = L/5 and L = 10x + z - 50 + 4y + 2T (µm)",
+            "D": "Coupler-port horizontal distance including tapers: D = 10x + z - 50 + 4R + 2T (µm)",
+            "bend_radius": "Radius for 90° Euler bends (µm)",
             "width": "Waveguide width (µm)"
         },
         "layers": {
@@ -48,10 +41,6 @@
         "taper": {
             "length": "Length of tapers connecting to grating couplers (µm)"
         },
-        "grating_coupler_model": "Model name from Json/grating_couplers.json",
-        "array_spacing": {
-            "x_diff": "Difference in x position between array elements (µm)",
-            "y_diff": "Difference in y position between array elements (µm)"
-        }
+        "grating_coupler_model": "Model name from Json/grating_couplers.json"
     }
 }

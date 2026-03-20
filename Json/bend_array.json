@@ -1,0 +1,50 @@
+{
+  "bend_element": {
+    "wg_width": 0.5,
+    "bend_radius": 8.5,
+    "ring_radius": 10.0,
+    "text_size": 3.5,
+    "taper_length": 20.0,
+    "grating_coupler_model": "GC_1550_TE",
+    "layers": {
+      "waveguide": [1, 0],
+      "ring": [3, 0],
+      "text": [4, 0]
+    }
+  },
+  "array": {
+    "name": "bend_array",
+    "output_name": "bend_array.gds",
+    "top_cell_prefix": "L",
+    "y_spacing": 100.0,
+    "lengths": {
+      "start": 100,
+      "stop": 2300,
+      "step": 100
+    },
+    "placement": {
+      "start_x": 660.0,
+      "start_y": -160.0
+    },
+    "grid": {
+      "boxes": 5,
+      "box_size": 500.0,
+      "line_width": 0.5
+    },
+    "alignment_marks": {
+      "size": 8.0,
+      "offset_from_grid": 50.0,
+      "cluster_spacing": 100.0
+    },
+    "width_label": {
+      "size": 25.0,
+      "offset_x": 100.0,
+      "offset_y": -100.0
+    }
+  },
+  "layers": {
+    "grid": [98, 0],
+    "marker": [20, 0],
+    "text": [4, 0]
+  }
+}

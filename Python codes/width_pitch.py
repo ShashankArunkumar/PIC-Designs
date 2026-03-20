@@ -1,6 +1,7 @@
 import gdsfactory as gf
 import json
 import os
+from grating_couplers import create_grating_coupler, get_gc_width
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -45,27 +46,10 @@ periods = generate_range(
 def waveguide_with_grating_couplers(name, wg_width, grating_period):
     wg_length = wg_params["wg_length"]
     taper_length = wg_params["taper_length"]
-    grating_n_periods = wg_params["grating_n_periods"]
-    grating_fill_factor = wg_params["grating_fill_factor"]
-    grating_taper_length_gc = wg_params["grating_taper_length_gc"]
-    grating_taper_angle_gc = wg_params["grating_taper_angle_gc"]
-    grating_wavelength_gc = wg_params["grating_wavelength_gc"]
-    grating_fiber_angle_gc = wg_params["grating_fiber_angle_gc"]
-    grating_polarization_gc = wg_params["grating_polarization_gc"]
-    gc_width = wg_params.get("grating_coupler_width", 0.5)  # Default to 0.5 if not specified
+    gc_model = wg_params.get("grating_coupler_model", "GC_1550_TE")
+    gc_width = get_gc_width(gc_model)
     wg_xs = gf.cross_section.strip(width=wg_width, layer=tuple(layers["waveguide"]))
-    gc_xs = gf.cross_section.strip(width=gc_width, layer=tuple(layers["waveguide"]))
-    gc = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_n_periods,
-        period=grating_period,
-        fill_factor=grating_fill_factor,
-        taper_length=grating_taper_length_gc,
-        taper_angle=grating_taper_angle_gc,
-        wavelength=grating_wavelength_gc,
-        fiber_angle=grating_fiber_angle_gc,
-        polarization=grating_polarization_gc,
-        cross_section=gc_xs,
-    )
+    gc = create_grating_coupler(gc_model, layer=tuple(layers["waveguide"]))
     taper = gf.components.taper(
         length=taper_length,
         width1=gc_width,

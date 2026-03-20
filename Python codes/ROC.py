@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 from typing import Tuple
+from grating_couplers import create_grating_coupler, get_gc_params, get_gc_width
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -41,7 +42,8 @@ text_offset_left = params["text"]["offset_left"]
 text_offset_right = params["text"]["offset_right"]
 taper_length = params["taper"]["length"]
 enable_text = params["text"]["enable"]
-grating_coupler_config = params["grating_coupler"]
+grating_coupler_model = params.get("grating_coupler_model", "GC_1550_TE")
+grating_coupler_config = get_gc_params(grating_coupler_model)
 
 # Define the cross_section for extrusion and S-bend
 cross_section = gf.cross_section.strip(width=width, layer=layer)
@@ -113,21 +115,12 @@ if __name__ == "__main__":
     array_comp = gf.Component("roc_array")
 
     # Initialize taper and grating coupler for array creation
-    gc = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_coupler_config["n_periods"],
-        period=grating_coupler_config["period"],
-        fill_factor=grating_coupler_config["fill_factor"],
-        taper_length=grating_coupler_config["taper_length"],
-        taper_angle=grating_coupler_config["taper_angle"],
-        wavelength=grating_coupler_config["wavelength"],
-        fiber_angle=grating_coupler_config["fiber_angle"],
-        polarization=grating_coupler_config["polarization"],
-        cross_section=gf.cross_section.strip(width=grating_coupler_config.get("width", 0.5), layer=layer),
-    )
+    gc = create_grating_coupler(grating_coupler_model, layer=layer)
+    gc_width = get_gc_width(grating_coupler_model)
 
     taper = gf.components.taper(
         length=taper_length,
-        width1=grating_coupler_config.get("width", 0.5),
+        width1=gc_width,
         width2=width,
         layer=layer,
     )
@@ -197,7 +190,8 @@ def build_component_from_params(params):
     text_offset_right = params["text"]["offset_right"]
     taper_length = params["taper"]["length"]
     enable_text = params["text"]["enable"]
-    grating_coupler_config = params["grating_coupler"]
+    grating_coupler_model = params.get("grating_coupler_model", "GC_1550_TE")
+    grating_coupler_config = get_gc_params(grating_coupler_model)
 
     cross_section = gf.cross_section.strip(width=width, layer=layer)
     bend_180 = gf.path.euler(radius=s, angle=180)
@@ -252,28 +246,8 @@ def build_component_from_params(params):
     final_comp = gf.Component(cell_name)
     wg = gf.path.extrude(P, cross_section=cross_section)
     wg_ref = final_comp << wg
-    # Grating coupler params
-    grating_n_periods = grating_coupler_config["n_periods"]
-    grating_period = grating_coupler_config["period"]
-    grating_fill_factor = grating_coupler_config["fill_factor"]
-    grating_taper_length_gc = grating_coupler_config["taper_length"]
-    grating_taper_angle_gc = grating_coupler_config["taper_angle"]
-    grating_wavelength_gc = grating_coupler_config["wavelength"]
-    grating_fiber_angle_gc = grating_coupler_config["fiber_angle"]
-    grating_polarization_gc = grating_coupler_config["polarization"]
-    gc_width = grating_coupler_config.get("width", 0.5)
-    gc_xs = gf.cross_section.strip(width=gc_width, layer=layer)
-    gc = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_n_periods,
-        period=grating_period,
-        fill_factor=grating_fill_factor,
-        taper_length=grating_taper_length_gc,
-        taper_angle=grating_taper_angle_gc,
-        wavelength=grating_wavelength_gc,
-        fiber_angle=grating_fiber_angle_gc,
-        polarization=grating_polarization_gc,
-        cross_section=gc_xs,
-    )
+    gc = create_grating_coupler(grating_coupler_model, layer=layer)
+    gc_width = get_gc_width(grating_coupler_model)
     taper = gf.components.taper(
         length=taper_length,
         width1=gc_width,
@@ -318,21 +292,12 @@ def get_component():
     array_comp = gf.Component("roc_array")
 
     # Initialize taper and grating coupler for array creation
-    gc = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_coupler_config["n_periods"],
-        period=grating_coupler_config["period"],
-        fill_factor=grating_coupler_config["fill_factor"],
-        taper_length=grating_coupler_config["taper_length"],
-        taper_angle=grating_coupler_config["taper_angle"],
-        wavelength=grating_coupler_config["wavelength"],
-        fiber_angle=grating_coupler_config["fiber_angle"],
-        polarization=grating_coupler_config["polarization"],
-        cross_section=gf.cross_section.strip(width=grating_coupler_config.get("width", 0.5), layer=layer),
-    )
+    gc = create_grating_coupler(grating_coupler_model, layer=layer)
+    gc_width = get_gc_width(grating_coupler_model)
 
     taper = gf.components.taper(
         length=taper_length,
-        width1=grating_coupler_config.get("width", 0.5),
+        width1=gc_width,
         width2=width,
         layer=layer,
     )

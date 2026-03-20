@@ -1,0 +1,49 @@
+{
+  "length_element": {
+    "L": 1000,
+    "D": 600,
+    "bend_radius": 10,
+    "width": 0.3,
+    "taper_length": 20,
+    "grating_coupler_model": "GC_1550_TE",
+    "layers": {
+      "waveguide": [1, 0],
+      "text": [3, 0]
+    }
+  },
+  "array": {
+    "name": "length_array",
+    "output_name": "length_array.gds",
+    "top_cell_prefix": "L",
+    "y_spacing": 50.0,
+    "lengths": {
+      "start": 800,
+      "stop": 2300,
+      "step": 50
+    },
+    "placement": {
+      "start_x": 950.0,
+      "start_y": -70.0
+    },
+    "grid": {
+      "boxes": 5,
+      "box_size": 500.0,
+      "line_width": 0.5
+    },
+    "alignment_marks": {
+      "size": 8.0,
+      "offset_from_grid": 20.0,
+      "cluster_spacing": 20.0
+    },
+    "distance_label": {
+      "size": 25.0,
+      "offset_x": 100.0,
+      "offset_y": -100.0
+    }
+  },
+  "layers": {
+    "grid": [98, 0],
+    "marker": [95, 0],
+    "text": [4, 0]
+  }
+}

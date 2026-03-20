@@ -26,18 +26,7 @@
         "taper": {
             "length": 20
         },
-        "grating_coupler": {
-            "type": "grating_coupler_elliptical_uniform",
-            "n_periods": 40,
-            "period": 0.34,
-            "fill_factor": 0.5,
-            "taper_length": 26.0,
-            "taper_angle": 30.0,
-            "wavelength": 0.532,
-            "fiber_angle": 15.0,
-            "polarization": "te",
-            "width": 0.5
-        },
+        "grating_coupler_model": "GC_1550_TE",
         "array": {
             "spacing": [165, 330, 165, 330, 165, 330, 165, 330, 165, 360],
             "displacement": {
@@ -58,6 +47,33 @@
         "e_beam_marker": {
             "size": 8.0,
             "offset": 16.0
+        },
+        "simulation": {
+            "family": "ROC_array",
+            "enabled": true,
+            "runtime": {
+                "wavelength_um": 1.55,
+                "run_time": 1e-12
+            },
+            "grid": {
+                "mode": "auto",
+                "min_steps_per_wvl": 12,
+                "dl_min_um": 0.02
+            },
+            "boundary": {
+                "preset": "pml_all",
+                "pml_layers": 12
+            },
+            "monitor": {
+                "name": "fields",
+                "plane": "z",
+                "plane_position_um": 0.0,
+                "fields": [
+                    "Ex",
+                    "Ey",
+                    "Ez"
+                ]
+            }
         }
     }
 }

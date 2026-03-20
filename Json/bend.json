@@ -1,0 +1,15 @@
+{
+  "wg_width": 0.5,
+  "approximate_length": 226.7,
+  "bend_radius": 8.5,
+  "ring_radius": 10.0,
+  "layers": {
+    "waveguide": [1, 0],
+    "ring": [3, 0],
+    "text": [4, 0]
+  },
+  "top_cell_name": "226p7",
+  "text_size": 3.5,
+  "taper_length": 20.0,
+  "grating_coupler_model": "GC_1550_TE"
+}

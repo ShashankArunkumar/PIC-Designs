@@ -12,15 +12,8 @@
   "waveguide_with_grating_couplers": {
     "wg_length": 4000.0,
     "taper_length": 20.0,
-    "grating_n_periods": 40,
-    "grating_fill_factor": 0.5,
-    "grating_taper_length_gc": 26.0,
-    "grating_taper_angle_gc": 30.0,
-    "grating_wavelength_gc": 0.532,
-    "grating_fiber_angle_gc": 15.0,
-    "grating_polarization_gc": "te",
     "cross_section_type": "strip",
-    "grating_coupler_width": 0.5
+    "grating_coupler_model": "GC_1550_TE"
   },
   "p_cascades": {
     "y_spacing": 30.0,
@@ -79,5 +72,32 @@
     "show": true,
     "log": true,
     "export_svg": true
+  },
+  "simulation": {
+    "family": "width_pitch",
+    "enabled": true,
+    "runtime": {
+      "wavelength_um": 1.55,
+      "run_time": 1e-12
+    },
+    "grid": {
+      "mode": "auto",
+      "min_steps_per_wvl": 12,
+      "dl_min_um": 0.02
+    },
+    "boundary": {
+      "preset": "pml_all",
+      "pml_layers": 12
+    },
+    "monitor": {
+      "name": "fields",
+      "plane": "z",
+      "plane_position_um": 0.0,
+      "fields": [
+        "Ex",
+        "Ey",
+        "Ez"
+      ]
+    }
   }
 }

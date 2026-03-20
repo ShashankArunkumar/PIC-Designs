@@ -1,6 +1,7 @@
 import gdsfactory as gf
 import numpy as np
 import uuid  # Add this import at the top of the file
+from grating_couplers import create_grating_coupler
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -28,28 +29,10 @@ def grating_waveguide(name, wg_width, angle, length):
     neff = 1.607155  # Effective refractive index
     grating_period = 0.532 / (neff - np.sin(np.radians(angle)))  
     wg_length = length  # Use the dynamic length parameter
-    grating_n_periods = 40  # Hardcoded number of grating periods
-    grating_fill_factor = 0.5  # Hardcoded grating fill factor
-    grating_taper_length_gc = 26.0  # Hardcoded grating taper length
-    grating_taper_angle_gc = 30.0  # Hardcoded grating taper angle
-    grating_wavelength_gc = 0.532  # Hardcoded grating wavelength
-    grating_fiber_angle_gc = 15.0  # Hardcoded grating fiber angle
-    grating_polarization_gc = "te"  # Hardcoded grating polarization
+    gc_model = "GC_1550_TE"
 
     wg_xs = gf.cross_section.strip(width=wg_width, layer=(1, 0))
-    gc_xs = gf.cross_section.strip(width=wg_width, layer=(1, 0))
-
-    gc = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_n_periods,
-        period=grating_period,
-        fill_factor=grating_fill_factor,
-        taper_length=grating_taper_length_gc,
-        taper_angle=grating_taper_angle_gc,
-        wavelength=grating_wavelength_gc,
-        fiber_angle=grating_fiber_angle_gc,
-        polarization=grating_polarization_gc,
-        cross_section=gc_xs,
-    )
+    gc = create_grating_coupler(gc_model, layer=(1, 0))
 
     wg = gf.components.straight(length=wg_length, cross_section=wg_xs)
 
@@ -58,11 +41,9 @@ def grating_waveguide(name, wg_width, angle, length):
     gc1_ref = c.add_ref(gc)
     gc2_ref = c.add_ref(gc)
 
-    # Connect left side
-    gc1_ref.connect("o1", wg_ref.ports["o1"])
-
-    # Connect right side
-    gc2_ref.connect("o1", wg_ref.ports["o2"])
+    # The width sweep can differ from coupler port width; allow this intentional mismatch.
+    gc1_ref.connect("o1", wg_ref.ports["o1"], allow_width_mismatch=True)
+    gc2_ref.connect("o1", wg_ref.ports["o2"], allow_width_mismatch=True)
 
     # Add ports
     c.add_port("opt1", port=gc1_ref.ports["o2"])
@@ -110,54 +91,21 @@ def waveguide_mixed_coupler(name, wg_width, angle, length):
     grating_period = 0.532 / (neff - np.sin(np.radians(angle)))  # Calculate grating period
 
     wg_length = length  # Use the dynamic length parameter
-    grating_n_periods = 40  # Hardcoded number of grating periods
-    grating_fill_factor = 0.5  # Hardcoded grating fill factor
+    gc_model = "GC_1550_TE"
 
     wg_xs = gf.cross_section.strip(width=wg_width, layer=(1, 0))
-    gc_xs = gf.cross_section.strip(width=wg_width, layer=(1, 0))
-
-    # Create elliptical grating coupler for the left side
-    gc_elliptical = gf.components.grating_coupler_elliptical_uniform(
-        n_periods=grating_n_periods,
-        period=grating_period,
-        fill_factor=grating_fill_factor,
-        taper_length=26.0,
-        taper_angle=30.0,  # Restore taper angle to 30 degrees for elliptical grating coupler
-        wavelength=0.532,
-        fiber_angle=15.0,
-        polarization="te",
-        cross_section=gc_xs,
-    )
-
-    # Define a custom cross-section with the desired width
-    custom_xs = gf.cross_section.strip(width=wg_width, layer=(1, 0))
-
-    # Create rectangular grating coupler for the right side with refined parameters
-    gc_rectangular = gf.components.grating_coupler_rectangular(
-        n_periods=grating_n_periods, 
-        period=grating_period, 
-        fill_factor=0.5, 
-        width_grating=wg_width,  # Match the waveguide width
-        length_taper=0, 
-        polarization='te', 
-        wavelength=0.532, 
-        taper='taper', 
-        layer_slab='SLAB150', 
-        cross_section=custom_xs  # Use the custom cross-section
-    )
+    gc_component = create_grating_coupler(gc_model, layer=(1, 0))
 
     wg = gf.components.straight(length=wg_length, cross_section=wg_xs)
 
     c = gf.Component(name=name)
     wg_ref = c.add_ref(wg)
-    gc1_ref = c.add_ref(gc_elliptical)
-    gc2_ref = c.add_ref(gc_rectangular)
+    gc1_ref = c.add_ref(gc_component)
+    gc2_ref = c.add_ref(gc_component)
 
-    # Connect left side
-    gc1_ref.connect("o1", wg_ref.ports["o1"])
-
-    # Connect right side
-    gc2_ref.connect("o1", wg_ref.ports["o2"])
+    # The width sweep can differ from coupler port width; allow this intentional mismatch.
+    gc1_ref.connect("o1", wg_ref.ports["o1"], allow_width_mismatch=True)
+    gc2_ref.connect("o1", wg_ref.ports["o2"], allow_width_mismatch=True)
 
     # Add ports
     c.add_port("opt1", port=gc1_ref.ports["o2"])

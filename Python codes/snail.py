@@ -1,5 +1,6 @@
 import numpy as np
 import gdsfactory as gf
+from grating_couplers import create_grating_coupler
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -25,6 +26,7 @@ bend_radius = 20
 ebm_field_size = 200
 waveguide_width = 0.556
 total_waveguide_length = 10000
+grating_coupler_model = "GC_1550_TE"
 
 # Create a spiral waveguide component with grating couplers
 def create_spiral_with_couplers(
@@ -34,6 +36,7 @@ def create_spiral_with_couplers(
     ebm_field_size=200,
     waveguide_width=0.556,
     total_waveguide_length=10000,
+    grating_coupler_model="GC_1550_TE",
     layer=(1, 0)
 ) -> gf.Component:
     """
@@ -139,24 +142,7 @@ def create_spiral_with_couplers(
     
     # Add grating couplers to the component
     try:
-        # Create a grating coupler
-        try:
-            # First attempt with elliptical uniform grating coupler
-            gc = gf.components.grating_coupler_elliptical_uniform(
-                width_waveguide=w,
-                polarization="te",
-                wavelength=1.55,
-                fiber_angle=15,
-                layer=layer
-            )
-            print("Using elliptical uniform grating coupler")
-        except Exception:
-            # Fallback to a simpler grating coupler if the elliptical one fails
-            print("Elliptical grating coupler failed, trying simpler grating coupler")
-            gc = gf.components.grating_coupler_te(
-                layer=layer,
-                width=w
-            )
+        gc = create_grating_coupler(grating_coupler_model, layer=layer)
         
         # Input grating coupler (left/west)
         gc_in = c << gc
@@ -193,6 +179,7 @@ def create_spiral_with_couplers(
     ebm_field_size=200,
     waveguide_width=0.556,
     total_waveguide_length=10000,
+    grating_coupler_model="GC_1550_TE",
     layer=(1, 0)
 ) -> gf.Component:
     """
@@ -298,24 +285,7 @@ def create_spiral_with_couplers(
     
     # Add grating couplers to the component
     try:
-        # Create a grating coupler
-        try:
-            # First attempt with elliptical uniform grating coupler
-            gc = gf.components.grating_coupler_elliptical_uniform(
-                width_waveguide=w,
-                polarization="te",
-                wavelength=1.55,
-                fiber_angle=15,
-                layer=layer
-            )
-            print("Using elliptical uniform grating coupler")
-        except Exception:
-            # Fallback to a simpler grating coupler if the elliptical one fails
-            print("Elliptical grating coupler failed, trying simpler grating coupler")
-            gc = gf.components.grating_coupler_te(
-                layer=layer,
-                width=w
-            )
+        gc = create_grating_coupler(grating_coupler_model, layer=layer)
         
         # Input grating coupler (left/west)
         gc_in = c << gc
@@ -358,7 +328,8 @@ def get_component(width=None):
         bend_radius=bend_radius,
         ebm_field_size=ebm_field_size,
         waveguide_width=wg_width,
-        total_waveguide_length=total_waveguide_length
+        total_waveguide_length=total_waveguide_length,
+        grating_coupler_model=grating_coupler_model,
     )
     
     # Create die name based on width
@@ -378,7 +349,8 @@ spiral = create_spiral_with_couplers(
     bend_radius=bend_radius,
     ebm_field_size=ebm_field_size,
     waveguide_width=waveguide_width,
-    total_waveguide_length=total_waveguide_length
+    total_waveguide_length=total_waveguide_length,
+    grating_coupler_model=grating_coupler_model,
 )
 
 # Example usage
