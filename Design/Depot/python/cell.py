@@ -7,7 +7,8 @@ for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
-        breakimport json
+        break
+import json
 import random  # Import the random module
 from pathlib import Path
 
@@ -311,3 +312,4 @@ if __name__ == "__main__":
 
     # Display the outline
     outline.show()
+

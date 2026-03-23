@@ -10,7 +10,8 @@ for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
-        breakimport numpy as np
+        break
+import numpy as np
 import json
 from grating_couplers import create_grating_coupler, get_gc_params, get_gc_width
 
@@ -233,4 +234,5 @@ if __name__ == "__main__":
     
     # Visualize
     device.show()
+
 

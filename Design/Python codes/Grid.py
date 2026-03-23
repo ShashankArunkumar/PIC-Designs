@@ -10,7 +10,8 @@ for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
-        breakimport numpy as np
+        break
+import numpy as np
 import json
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
@@ -343,3 +344,4 @@ if __name__ == "__main__":
         grid.show()
     else:
         print("Failed to load grid configuration")
+

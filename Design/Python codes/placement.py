@@ -7,7 +7,8 @@ for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
-        breakimport importlib
+        break
+import importlib
 import importlib.util
 import sys
 from pathlib import Path
@@ -251,3 +252,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
