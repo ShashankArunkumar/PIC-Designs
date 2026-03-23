@@ -8,7 +8,8 @@ for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
-        breakfrom grating_couplers import create_grating_coupler
+        break
+from grating_couplers import create_grating_coupler
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
