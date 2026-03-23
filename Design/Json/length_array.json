@@ -26,7 +26,7 @@
       "start_y": -70.0
     },
     "grid": {
-      "boxes": 5,
+      "boxes": 7,
       "box_size": 500.0,
       "line_width": 0.5
     },

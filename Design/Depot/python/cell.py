@@ -1,6 +1,7 @@
 import gdsfactory as gf
 import json
 import random  # Import the random module
+from pathlib import Path
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -286,8 +287,9 @@ def create_outline():
     # Return the top-level component
     return top_level
 
-# Load configuration from cell.json
-with open("c:/Users/Admin/Desktop/Codes for Design/Depot/Json/cell.json", "r") as config_file:
+# Load configuration from cell.json using a path relative to this script.
+config_path = Path(__file__).resolve().parents[1] / "Json" / "cell.json"
+with open(config_path, "r") as config_file:
     config = json.load(config_file)
 
 letter = config["letter"]
