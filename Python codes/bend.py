@@ -153,8 +153,4 @@ if __name__ == "__main__":
         grating_coupler_model=params["grating_coupler_model"],
     )
 
-    output_path = os.path.join(os.path.dirname(__file__), "..", "build", "gds", "bend.gds")
-    bend_component.write_gds(output_path)
-    print(f"Bend GDS written to: {output_path}")
-    # Open in KLayout/KLive if available.
     bend_component.show()

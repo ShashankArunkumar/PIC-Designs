@@ -378,11 +378,3 @@ if __name__ == "__main__":
         spiral.show()
     except Exception as e:
         print(f"Error showing component: {e}")
-        
-    # Write the component to a GDS file
-    try:
-        print("Writing component to GDS file...")
-        spiral.write_gds("spiral_with_gratings.gds")
-        print("GDS file saved as 'spiral_with_gratings.gds'")
-    except Exception as e:
-        print(f"Error writing GDS: {e}")

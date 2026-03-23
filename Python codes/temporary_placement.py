@@ -111,11 +111,4 @@ def create_temporary_placement():
 if __name__ == "__main__":
     comp = create_temporary_placement()
 
-    output_dir = Path(__file__).parent.parent / "build" / "gds"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = output_dir / "temporary_placement.gds"
-    comp.write_gds(str(output_path))
-    print(f"\nSaved to {output_path}")
-
     comp.show()

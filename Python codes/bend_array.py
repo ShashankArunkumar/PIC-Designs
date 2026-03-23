@@ -229,8 +229,4 @@ if __name__ == "__main__":
 
     bend_array = create_bend_array(bend_params, bend_array_params)
 
-    output_name = bend_array_params.get("array", {}).get("output_name", "bend_array.gds")
-    output_path = os.path.join(os.path.dirname(__file__), "..", "build", "gds", output_name)
-    bend_array.write_gds(output_path)
-    print(f"Bend array GDS written to: {output_path}")
     bend_array.show()

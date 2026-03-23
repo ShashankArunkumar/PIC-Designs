@@ -172,10 +172,6 @@ if __name__ == "__main__":
 
     array_comp.show()
 
-    # Save the array as a GDS file
-    array_comp.write_gds("GDS_Files/roc_array_devices.gds")
-    print("✓ GDS saved as GDS_Files/roc_array_devices.gds")
-
 def build_component_from_params(params):
     r = params["geometry"]["r"]
     L = params["geometry"]["L"]

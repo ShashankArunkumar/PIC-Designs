@@ -238,10 +238,6 @@ def main():
     dies_ref = top_chip.add_ref(dies_component)
     dies_ref.name = "Dies"
 
-    # Save the result
-    top_chip.write_gds("build/gds/17_07_2025.gds")
-    print("GDS with placed component saved as build/gds/grid_with_placement.gds")
-
     # Show the layout in the viewer
     top_chip.show()
 

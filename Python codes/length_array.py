@@ -204,10 +204,4 @@ if __name__ == "__main__":
 
     length_array = create_length_array(array_params)
 
-    output_name = array_params.get("array", {}).get("output_name", "length_array.gds")
-    output_path = os.path.join(
-        os.path.dirname(__file__), "..", "build", "gds", output_name
-    )
-    length_array.write_gds(output_path)
-    print(f"Length array GDS written to: {output_path}")
     length_array.show()

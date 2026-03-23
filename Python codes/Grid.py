@@ -333,8 +333,5 @@ if __name__ == "__main__":
     if config:
         grid = create_grid_component(config)
         grid.show()
-        # Save as GDS file
-        grid.write_gds("build/gds/grid_layout.gds")
-        print("GDS file saved as build/gds/grid_layout.gds")
     else:
         print("Failed to load grid configuration")

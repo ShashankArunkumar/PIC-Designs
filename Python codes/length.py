@@ -223,12 +223,5 @@ if __name__ == "__main__":
         port = device.ports[port_name]
         print(f"Port {port_name}: position={port.center}, angle={port.angle:.1f}°")
     
-    # Save to GDS
-    output_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "build", "gds")
-    os.makedirs(output_dir, exist_ok=True)
-    output_file = os.path.join(output_dir, "length.gds")
-    device.write_gds(output_file)
-    print(f"\nDevice saved to: {output_file}")
-    
     # Visualize
     device.show()

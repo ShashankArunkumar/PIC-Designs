@@ -101,10 +101,6 @@ def main():
     particles = create_particles_component()
     
     if particles:
-        # Save as GDS file
-        particles.write_gds("GDS_Files/particles.gds")
-        print(f"\n✓ Particles GDS saved as GDS_Files/particles.gds")
-        
         # Show in viewer
         particles.show()
         print(f"✓ Particles component created with bbox: {particles.bbox}")
