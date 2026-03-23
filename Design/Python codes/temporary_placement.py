@@ -2,7 +2,15 @@ import os
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
 import gdsfactory as gf
-import json
+from pathlib import Path
+import kfactory.conf as kf_conf
+
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        breakimport json
 import importlib
 import importlib.util
 import sys
@@ -112,3 +120,4 @@ if __name__ == "__main__":
     comp = create_temporary_placement()
 
     comp.show()
+

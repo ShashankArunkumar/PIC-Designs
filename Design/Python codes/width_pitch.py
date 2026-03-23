@@ -1,5 +1,13 @@
 import gdsfactory as gf
-import json
+from pathlib import Path
+import kfactory.conf as kf_conf
+
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        breakimport json
 import os
 from grating_couplers import create_grating_coupler, get_gc_width
 
@@ -257,3 +265,4 @@ if __name__ == "__main__":
     
     if output_params["show"]:
         c.show()
+

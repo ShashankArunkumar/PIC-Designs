@@ -5,7 +5,15 @@ import json
 os.environ["PYTHONDONTWRITEBYTECODE"] = "1"  # Prevent .pyc file creation
 
 import gdsfactory as gf
+from pathlib import Path
+import kfactory.conf as kf_conf
 
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        break
 from bend import create_gc_u_turn_element, load_bend_params
 
 
@@ -230,3 +238,4 @@ if __name__ == "__main__":
     bend_array = create_bend_array(bend_params, bend_array_params)
 
     bend_array.show()
+

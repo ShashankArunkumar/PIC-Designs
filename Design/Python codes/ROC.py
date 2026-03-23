@@ -2,7 +2,15 @@ import os
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc file creation
 
 import gdsfactory as gf
-import matplotlib.pyplot as plt
+from pathlib import Path
+import kfactory.conf as kf_conf
+
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        breakimport matplotlib.pyplot as plt
 import numpy as np
 import json
 from typing import Tuple

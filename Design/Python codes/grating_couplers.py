@@ -2,7 +2,15 @@ import json
 import os
 
 import gdsfactory as gf
+from pathlib import Path
+import kfactory.conf as kf_conf
 
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        break
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
     gf.get_active_pdk()
@@ -94,3 +102,4 @@ def create_grating_coupler(name: str | None = None, layer: tuple[int, int] | Non
         polarization=str(params["polarization"]),
         cross_section=gc_xs,
     )
+

@@ -1,5 +1,13 @@
 import gdsfactory as gf
-import importlib.util
+from pathlib import Path
+import kfactory.conf as kf_conf
+
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        breakimport importlib.util
 import os
 import random
 import json

@@ -1,6 +1,14 @@
 import numpy as np
 import gdsfactory as gf
-from grating_couplers import create_grating_coupler
+from pathlib import Path
+import kfactory.conf as kf_conf
+
+# Route gdsfactory build artifacts to Setup/build.
+for _parent in Path(__file__).resolve().parents:
+    _setup_dir = _parent / "Setup"
+    if _setup_dir.exists():
+        kf_conf.config.__dict__["project_dir"] = _setup_dir
+        breakfrom grating_couplers import create_grating_coupler
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -378,3 +386,4 @@ if __name__ == "__main__":
         spiral.show()
     except Exception as e:
         print(f"Error showing component: {e}")
+
