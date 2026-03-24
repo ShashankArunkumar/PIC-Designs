@@ -1,0 +1,5 @@
+{
+    "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+    "tidy3d.preferredInstallationMode": "path",
+    "tidy3d.preferredInstallation": "d:\\M2 Thesis\\PIC-Designs\\Setup\\.venv313\\Scripts\\python.exe"
+}
