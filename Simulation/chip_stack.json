@@ -1,0 +1,99 @@
+{
+  "Air_clad": {
+    "description": "Si3N4 waveguide on SiO2 BOX with air cladding",
+    "layers": [
+      {
+        "name": "substrate",
+        "material": "Si",
+        "thickness_nm": null,
+        "z_min_nm": null,
+        "z_max_nm": -500,
+        "material_file": "Materials/Silicon (Crystalline) (_cSi_)_Palik_Lossy.json",
+        "note": "Semi-infinite bulk silicon"
+      },
+      {
+        "name": "BOX",
+        "material": "SiO2",
+        "thickness_nm": 500,
+        "z_min_nm": -500,
+        "z_max_nm": 0,
+        "material_file": "Materials/Silicon Dioxide (_SiO2_)_Horiba.json",
+        "note": "Buried oxide layer"
+      },
+      {
+        "name": "waveguide",
+        "material": "Si3N4",
+        "thickness_nm": 200,
+        "z_min_nm": 0,
+        "z_max_nm": 200,
+        "material_file": "Materials/Silicon Nitride (_Si3N4_)_Horiba.json",
+        "note": "Core waveguide (grating coupler)"
+      },
+      {
+        "name": "cladding",
+        "material": "Air",
+        "thickness_nm": null,
+        "z_min_nm": 200,
+        "z_max_nm": null,
+        "refractive_index": 1.0,
+        "note": "Semi-infinite air above waveguide"
+      }
+    ],
+    "domain_z_nm": [-500, 2500],
+    "wavelength_primary_nm": 1550,
+    "note": "Air cladding stack for 1.55µm telecom band; uses wavelength-dependent materials"
+  },
+  "SiO2_clad": {
+    "description": "Si3N4 waveguide on SiO2 BOX with 700nm SiO2 cladding",
+    "layers": [
+      {
+        "name": "substrate",
+        "material": "Si",
+        "thickness_nm": null,
+        "z_min_nm": null,
+        "z_max_nm": -500,
+        "material_file": "Materials/Silicon (Crystalline) (_cSi_)_Palik_Lossy.json",
+        "note": "Semi-infinite bulk silicon"
+      },
+      {
+        "name": "BOX",
+        "material": "SiO2",
+        "thickness_nm": 500,
+        "z_min_nm": -500,
+        "z_max_nm": 0,
+        "material_file": "Materials/Silicon Dioxide (_SiO2_)_Horiba.json",
+        "note": "Buried oxide layer"
+      },
+      {
+        "name": "waveguide",
+        "material": "Si3N4",
+        "thickness_nm": 200,
+        "z_min_nm": 0,
+        "z_max_nm": 200,
+        "material_file": "Materials/Silicon Nitride (_Si3N4_)_Horiba.json",
+        "note": "Core waveguide (grating coupler, embedded within upper cladding)"
+      },
+      {
+        "name": "SiO2_cladding",
+        "material": "SiO2",
+        "thickness_nm": 700,
+        "z_min_nm": 0,
+        "z_max_nm": 700,
+        "material_file": "Materials/Silicon Dioxide (_SiO2_)_Horiba.json",
+        "note": "Upper cladding surrounds Si3N4 (z=0-200nm waveguide, z=200-700nm SiO2)"
+      },
+      {
+        "name": "air_above",
+        "material": "Air",
+        "thickness_nm": null,
+        "z_min_nm": 700,
+        "z_max_nm": null,
+        "refractive_index": 1.0,
+        "note": "Semi-infinite air above SiO2 cladding"
+      }
+    ],
+    "domain_z_nm": [-500, 2500],
+    "wavelength_primary_nm": 1550,
+    "note": "SiO2 cladding stack; waveguide embedded in upper cladding; uses wavelength-dependent materials"
+  }
+}

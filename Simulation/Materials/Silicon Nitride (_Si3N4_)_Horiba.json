@@ -1,0 +1,1 @@
+{"attrs":{},"name":"Silicon Nitride (\"Si3N4\")_Horiba","frequency_range":[362698386340789,1329894083249559.8],"allow_gain":false,"nonlinear_spec":null,"modulation_spec":null,"viz_spec":null,"heat_spec":null,"type":"PoleResidue","eps_inf":1,"poles":[[{"real":-1357465464784539.5,"imag":-4646140872332419},{"real":0,"imag":11036063372545060}]]}
