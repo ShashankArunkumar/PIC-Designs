@@ -63,18 +63,17 @@ def add_fixed_grid(
     return total_size, total_size
 
 
-def add_d_distance_text(
+def add_sw_width_text(
     component: gf.Component,
-    d_distance: float,
+    width_nm: int,
     text_layer: tuple[int, int],
     text_size: float = 20.0,
     offset_x: float = 25.0,
     offset_y: float = -25.0,
 ) -> None:
-    """Add plain top-left text label with D-prefixed distance."""
-    distance_int = int(round(d_distance))
+    """Add plain top-left text label with SW-prefixed width in nm."""
     label = component << gf.components.text(
-        text=f"D{distance_int}",
+        text=f"SW{width_nm}",
         size=text_size,
         layer=text_layer,
     )
@@ -134,8 +133,9 @@ def create_length_array(array_params: dict) -> gf.Component:
     )
     
     d_distance = float(array_params.get("length_element", {}).get("D", 600))
-    d_int = int(round(d_distance))
-    array_name = f"d{d_int}"
+    waveguide_width = float(array_params.get("length_element", {}).get("width", 0.3))
+    width_nm = int(round(waveguide_width * 1000))
+    array_name = str(array_cfg.get("array_name", f"SW{width_nm}"))
     array = gf.Component(array_name)
 
     array_layers = array_params.get("layers", {})
@@ -162,9 +162,9 @@ def create_length_array(array_params: dict) -> gf.Component:
         cluster_spacing=float(marker_cfg.get("cluster_spacing", 20.0)),
     )
 
-    add_d_distance_text(
+    add_sw_width_text(
         component=array,
-        d_distance=d_distance,
+        width_nm=width_nm,
         text_layer=label_text_layer,
         text_size=float(label_cfg.get("size", 25.0)),
         offset_x=float(label_cfg.get("offset_x", 100.0)),
@@ -176,9 +176,8 @@ def create_length_array(array_params: dict) -> gf.Component:
     local_y_spacing = float(array_cfg.get("y_spacing", 130.0))
     top_cell_prefix = str(array_cfg.get("top_cell_prefix", "L"))
     bend_radius = float(array_params.get("length_element", {}).get("bend_radius", 10.0))
-    waveguide_width = float(array_params.get("length_element", {}).get("width", 0.3))
     taper_length_value = float(array_params.get("length_element", {}).get("taper_length", 20.0))
-    grating_coupler_model = array_params.get("length_element", {}).get("grating_coupler_model", "GC_1550_TE")
+    grating_coupler_model = array_params.get("length_element", {}).get("grating_coupler_model", None)
     current_y = start_y
 
     for length in lengths:

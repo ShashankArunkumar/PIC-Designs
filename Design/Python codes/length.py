@@ -13,7 +13,7 @@ for _parent in Path(__file__).resolve().parents:
         break
 import numpy as np
 import json
-from grating_couplers import create_grating_coupler, get_gc_params, get_gc_width
+from grating_couplers import create_grating_coupler, get_gc_params
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -44,8 +44,13 @@ text_offset_left = params["text"]["offset_left"]
 text_offset_right = params["text"]["offset_right"]
 enable_text = params["text"]["enable"]
 taper_length = params["taper"]["length"]
-grating_coupler_model = params.get("grating_coupler_model", "GC_1550_TE")
-grating_coupler_config = get_gc_params(grating_coupler_model)
+grating_coupler_model = params.get("grating_coupler_model", None)
+
+# Keep import-time configuration robust if JSON carries a stale model name.
+try:
+    get_gc_params(grating_coupler_model)
+except ValueError:
+    grating_coupler_model = None
 
 # Define the cross_section for extrusion
 cross_section = gf.cross_section.strip(width=width, layer=layer)
@@ -152,7 +157,7 @@ def report_dimensions(
 def build_length_element(
     length_value: float,
     distance_value: float,
-    grating_coupler_model: str = "GC_1550_TE",
+    grating_coupler_model: str | None = None,
     layer: tuple = (1, 0),
     bend_radius: float | None = None,
     waveguide_width: float | None = None,
@@ -195,27 +200,41 @@ def build_length_element(
     wg_ref = component << wg
     
     # Create taper and grating coupler
-    gc = create_grating_coupler(grating_coupler_model, layer=layer_local)
-    gc_width = get_gc_width(grating_coupler_model)
-    
-    taper = gf.components.taper(
-        length=taper_length_local,
-        width1=gc_width,
-        width2=width_local,
+    gc = create_grating_coupler(
+        grating_coupler_model,
         layer=layer_local,
+        port_width=width_local,
     )
-    
-    # Add left grating coupler and taper
-    taper_left = component << taper
+
     gc_left = component << gc
-    taper_left.connect("o2", wg_ref.ports["o1"])
-    gc_left.connect("o1", taper_left.ports["o1"])
-    
-    # Add right grating coupler and taper
-    taper_right = component << taper
     gc_right = component << gc
-    taper_right.connect("o2", wg_ref.ports["o2"])
-    gc_right.connect("o1", taper_right.ports["o1"])
+    gc_left.connect("o1", wg_ref.ports["o1"])
+    gc_right.connect("o1", wg_ref.ports["o2"])
+
+    if enable_text:
+        length_label = f"L{int(round(L_local))}"
+
+        left_label = component << gf.components.text(
+            text=length_label,
+            size=text_size,
+            layer=text_layer,
+        )
+        left_port = gc_left.ports["o2"]
+        left_label.move(
+            origin=left_label.center,
+            destination=(left_port.center[0] + text_offset_left, left_port.center[1]),
+        )
+
+        right_label = component << gf.components.text(
+            text=length_label,
+            size=text_size,
+            layer=text_layer,
+        )
+        right_port = gc_right.ports["o2"]
+        right_label.move(
+            origin=right_label.center,
+            destination=(right_port.center[0] + text_offset_right, right_port.center[1]),
+        )
     
     return component
 

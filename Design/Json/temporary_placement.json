@@ -1,0 +1,274 @@
+{
+    "placements":  [
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.15,
+                           "x":  -8500,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.2,
+                           "x":  -6000,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.22,
+                           "x":  -3500,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.25,
+                           "x":  -8500,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.3,
+                           "x":  -6000,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.35,
+                           "x":  -3500,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.4,
+                           "x":  -8500,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.45,
+                           "x":  -6000,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.5,
+                           "x":  -3500,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.15,
+                           "x":  -8500,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.2,
+                           "x":  -6000,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.24,
+                           "x":  -3500,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.25,
+                           "x":  -8500,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.3,
+                           "x":  -6000,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.35,
+                           "x":  -3500,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.4,
+                           "x":  -8500,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.45,
+                           "x":  -6000,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "bend.py",
+                           "width":  0.5,
+                           "x":  -3500,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.15,
+                           "x":  1000,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.2,
+                           "x":  3500,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.22,
+                           "x":  6000,
+                           "y":  8500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.25,
+                           "x":  1000,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.3,
+                           "x":  3500,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.35,
+                           "x":  6000,
+                           "y":  6000,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.4,
+                           "x":  1000,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.45,
+                           "x":  3500,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.5,
+                           "x":  6000,
+                           "y":  3500,
+                           "grating_coupler_model":  "GC_532_Airclad"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.15,
+                           "x":  1000,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.2,
+                           "x":  3500,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.24,
+                           "x":  6000,
+                           "y":  -1000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.25,
+                           "x":  1000,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.3,
+                           "x":  3500,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.35,
+                           "x":  6000,
+                           "y":  -3500,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.4,
+                           "x":  1000,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.45,
+                           "x":  3500,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       },
+                       {
+                           "component_file":  "length.py",
+                           "D":  600,
+                           "width":  0.5,
+                           "x":  6000,
+                           "y":  -6000,
+                           "grating_coupler_model":  "GC_532_SiO_2"
+                       }
+                   ]
+}

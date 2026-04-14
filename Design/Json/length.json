@@ -8,12 +8,12 @@
         },
         "layers": {
             "waveguide": [1, 0],
-            "text": [3, 0]
+            "text": [4, 0]
         },
         "text": {
-            "size": 20,
-            "offset_left": -150,
-            "offset_right": 150,
+            "size": 10,
+            "offset_left": -50,
+            "offset_right": 50,
             "enable": true
         },
         "taper": {

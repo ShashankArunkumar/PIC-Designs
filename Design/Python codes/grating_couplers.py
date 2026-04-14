@@ -79,7 +79,11 @@ def get_gc_width(name: str | None = None) -> float:
     return float(get_gc_params(name).get("width", 0.5))
 
 
-def create_grating_coupler(name: str | None = None, layer: tuple[int, int] | None = None) -> gf.Component:
+def create_grating_coupler(
+    name: str | None = None,
+    layer: tuple[int, int] | None = None,
+    port_width: float | None = None,
+) -> gf.Component:
     params = get_gc_params(name)
 
     if params["component_type"] != "grating_coupler_elliptical_uniform":
@@ -89,7 +93,8 @@ def create_grating_coupler(name: str | None = None, layer: tuple[int, int] | Non
         )
 
     gc_layer = tuple(params.get("layer", [1, 0])) if layer is None else tuple(layer)
-    gc_xs = gf.cross_section.strip(width=float(params["width"]), layer=gc_layer)
+    width_value = float(params["width"]) if port_width is None else float(port_width)
+    gc_xs = gf.cross_section.strip(width=width_value, layer=gc_layer)
 
     return gf.components.grating_coupler_elliptical_uniform(
         n_periods=int(params["n_periods"]),

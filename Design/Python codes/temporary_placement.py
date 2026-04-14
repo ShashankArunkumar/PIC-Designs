@@ -4,6 +4,7 @@ os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 import gdsfactory as gf
 from pathlib import Path
 import kfactory.conf as kf_conf
+import copy
 
 # Route gdsfactory build artifacts to Setup/build.
 for _parent in Path(__file__).resolve().parents:
@@ -14,6 +15,7 @@ for _parent in Path(__file__).resolve().parents:
 import json
 import importlib
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -46,28 +48,102 @@ def load_component_from_py(py_path, func_name, **kwargs):
 
     return factory(**kwargs)
 
-def create_bend_3x3_matrix(bend_array_comp, x_step=2500, y_step=-2500) -> gf.Component:
-    """
-    Create a 3x3 matrix of bend arrays.
-    The top-left corner of the matrix is defined as the origin (0, 0).
-    X step: +2500 (columns go right), Y step: -2500 (rows go down).
-    """
-    matrix = gf.Component()
 
-    for row in range(3):
-        for col in range(3):
-            x_pos = col * x_step
-            y_pos = row * y_step
-            ref = matrix << bend_array_comp
-            ref.move((x_pos, y_pos))
+def create_width_dependent_component(
+    component_file: str,
+    width: float,
+    script_dir: Path,
+    json_dir: Path,
+    grating_coupler_model: str | None = None,
+) -> gf.Component:
+    """
+    Create a width-dependent component (bend or length array).
+    
+    Args:
+        component_file: "bend.py" or "length.py" or "bend_array.py" or "length_array.py"
+        width: Width in micrometers (e.g., 0.5 for 500nm)
+        script_dir: Path to Python codes directory
+        json_dir: Path to Json directory
+        grating_coupler_model: Optional model override per placement.
+    
+    Returns:
+        gf.Component with the specified width
+    """
+    if component_file.startswith("bend"):
+        # Load bend_array with specified width
+        bend_json_path = json_dir / "bend.json"
+        bend_array_json_path = json_dir / "bend_array.json"
+        
+        with open(bend_json_path, "r") as f:
+            bend_params = json.load(f)
+        with open(bend_array_json_path, "r") as f:
+            bend_array_params = json.load(f)
+        
+        # Set the width in both base and array override sections.
+        # bend_array.py merges array_params["bend_element"] over base_params.
+        bend_params["wg_width"] = width
+        if "bend_element" not in bend_array_params:
+            bend_array_params["bend_element"] = {}
+        bend_array_params["bend_element"]["wg_width"] = width
+        if grating_coupler_model:
+            bend_params["grating_coupler_model"] = grating_coupler_model
+            bend_array_params["bend_element"]["grating_coupler_model"] = grating_coupler_model
 
-    return matrix
+        # Ensure unique top-level/child cell names for each width+GC-model variant.
+        if "array" not in bend_array_params:
+            bend_array_params["array"] = {}
+        width_nm = int(round(float(width) * 1000))
+        model_tag = re.sub(r"[^0-9A-Za-z]+", "", str(grating_coupler_model or "default"))
+        bend_array_params["array"]["array_name"] = f"BW{width_nm}_{model_tag}"
+        bend_array_params["array"]["top_cell_prefix"] = f"BW{width_nm}_{model_tag}_L"
+        
+        component = load_component_from_py(
+            str(script_dir / "bend_array.py"),
+            "create_bend_array",
+            base_params=bend_params,
+            array_params=bend_array_params,
+        )
+        return component
+    
+    elif component_file.startswith("length"):
+        # Load length_array with specified width.
+        # D comes from length_array.json defaults (or whatever that file defines).
+        length_array_json_path = json_dir / "length_array.json"
+        
+        with open(length_array_json_path, "r") as f:
+            length_array_params = json.load(f)
+        
+        # Set width in the length_element section.
+        if "length_element" not in length_array_params:
+            length_array_params["length_element"] = {}
+
+        length_array_params["length_element"]["width"] = width
+        if grating_coupler_model:
+            length_array_params["length_element"]["grating_coupler_model"] = grating_coupler_model
+
+        # Prevent collisions for multiple width variants in one layout.
+        if "array" not in length_array_params:
+            length_array_params["array"] = {}
+        width_nm = int(round(float(width) * 1000))
+        model_tag = re.sub(r"[^0-9A-Za-z]+", "", str(grating_coupler_model or "default"))
+        length_array_params["array"]["array_name"] = f"SW{width_nm}_{model_tag}"
+        length_array_params["array"]["top_cell_prefix"] = f"SW{width_nm}_{model_tag}_L"
+        
+        component = load_component_from_py(
+            str(script_dir / "length_array.py"),
+            "create_length_array",
+            array_params=length_array_params,
+        )
+        return component
+    
+    else:
+        raise ValueError(f"Unknown component file: {component_file}")
 
 
 def create_temporary_placement():
     """
-    Build the grid from Grid.py and place 4 copies of the 3x3 bend-array matrix on it
-    at positions (-8500, 8500), (1000, 8500), (1000, -1000), (-8500, -1000).
+    Build the grid from Grid.py and place width-dependent components on it
+    according to temporary_placement.json configuration.
     """
     script_dir = Path(__file__).parent
     json_dir = script_dir.parent / "Json"
@@ -77,43 +153,57 @@ def create_temporary_placement():
     from Grid import load_config_from_json, create_grid_component
     grid_config = load_config_from_json(str(json_dir / "Grid.json"))
     grid_comp = create_grid_component(grid_config)
+    print("Created grid component\n")
 
-    # --- Load bend array component ---
-    bend_json_path = json_dir / "bend.json"
-    bend_array_json_path = json_dir / "bend_array.json"
-    with open(bend_json_path, "r") as f:
-        bend_params = json.load(f)
-    with open(bend_array_json_path, "r") as f:
-        bend_array_params = json.load(f)
-    bend_array_comp = load_component_from_py(
-        str(script_dir / "bend_array.py"),
-        "create_bend_array",
-        base_params=bend_params,
-        array_params=bend_array_params,
-    )
-
-    # --- Build the reusable 3x3 matrix (top-left = origin) ---
-    matrix_comp = create_bend_3x3_matrix(bend_array_comp, x_step=2500, y_step=-2500)
-    print("Created 3x3 bend-array matrix (top-left = origin)")
+    # --- Load placement configuration ---
+    placement_config_path = json_dir / "temporary_placement.json"
+    with open(placement_config_path, "r") as f:
+        placement_config = json.load(f)
 
     # --- Assemble top-level component ---
     c = gf.Component("temporary_placement")
     c << grid_comp  # background grid
 
-    # Four placement positions on the grid
-    positions = [
-        (-8500,  8500),
-        ( 1000,  8500),
-        ( 1000, -1000),
-        (-8500, -1000),
-    ]
+    # --- Place components according to configuration ---
+    # Reuse already-created parameterized cells to avoid duplicate names in KCLayout.
+    component_cache = {}
 
-    for idx, (x, y) in enumerate(positions):
-        ref = c << matrix_comp
+    for idx, placement in enumerate(placement_config["placements"]):
+        component_file = placement["component_file"]
+        width = placement["width"]
+        x = placement["x"]
+        y = placement["y"]
+        grating_coupler_model = placement.get("grating_coupler_model", None)
+        cache_key = (component_file, width, grating_coupler_model)
+        if cache_key not in component_cache:
+            model_msg = (
+                f", gc_model={grating_coupler_model}"
+                if grating_coupler_model
+                else ""
+            )
+            print(f"Creating {component_file} with width={width}µm{model_msg}...")
+            component_cache[cache_key] = create_width_dependent_component(
+                component_file,
+                width,
+                script_dir,
+                json_dir,
+                grating_coupler_model,
+            )
+        else:
+            model_msg = (
+                f", gc_model={grating_coupler_model}"
+                if grating_coupler_model
+                else ""
+            )
+            print(f"Reusing {component_file} with width={width}µm{model_msg}...")
+
+        component = component_cache[cache_key]
+        
+        ref = c << component
         ref.move((x, y))
-        print(f"Placed 3x3 matrix #{idx+1} at ({x}, {y})")
-
-    print("\nTotal: 4 × 3×3 = 36 bend arrays on grid")
+        print(f"Placed '{component.name}' at ({x}, {y})")
+    
+    print(f"\nTotal placements: {len(placement_config['placements'])}")
     return c
 
 

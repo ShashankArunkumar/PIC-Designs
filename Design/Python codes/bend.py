@@ -14,7 +14,7 @@ for _parent in Path(__file__).resolve().parents:
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
         break
-from grating_couplers import create_grating_coupler, get_gc_width
+from grating_couplers import create_grating_coupler
 
 # gdsfactory 9.x requires an active PDK before geometry/layer creation.
 try:
@@ -65,8 +65,11 @@ def create_gc_u_turn_element(
     straight_length = 0.5 * (approximate_length - bend_length)
 
     wg_xs = gf.cross_section.strip(width=wg_width, layer=waveguide_layer)
-    gc_width = get_gc_width(grating_coupler_model)
-    gc = create_grating_coupler(grating_coupler_model, layer=waveguide_layer)
+    gc = create_grating_coupler(
+        grating_coupler_model,
+        layer=waveguide_layer,
+        port_width=wg_width,
+    )
     s = gf.components.straight(length=straight_length, cross_section=wg_xs)
     # Build a 180-degree Euler bend and extrude it to a waveguide.
     bend_180 = bend_path.extrude(wg_xs)
@@ -77,30 +80,10 @@ def create_gc_u_turn_element(
     s2 = bend_cell << s
     gc2 = bend_cell << gc
 
-    # Match the grating width to waveguide width when needed.
-    if abs(gc_width - wg_width) > 1e-9:
-        taper = gf.components.taper(
-            length=taper_length,
-            width1=gc_width,
-            width2=wg_width,
-            layer=waveguide_layer,
-        )
-        t1 = bend_cell << taper
-        t2 = bend_cell << taper
-
-        s1.connect("o1", b.ports["o1"])
-        s2.connect("o1", b.ports["o2"])
-
-        t1.connect("o2", s1.ports["o2"])
-        gc1.connect("o1", t1.ports["o1"])
-
-        t2.connect("o2", s2.ports["o2"])
-        gc2.connect("o1", t2.ports["o1"])
-    else:
-        s1.connect("o1", b.ports["o1"])
-        s2.connect("o1", b.ports["o2"])
-        gc1.connect("o1", s1.ports["o2"])
-        gc2.connect("o1", s2.ports["o2"])
+    s1.connect("o1", b.ports["o1"])
+    s2.connect("o1", b.ports["o2"])
+    gc1.connect("o1", s1.ports["o2"])
+    gc2.connect("o1", s2.ports["o2"])
 
     bend_cell.add_port("opt_in", port=gc1.ports["o2"])
     bend_cell.add_port("opt_out", port=gc2.ports["o2"])
@@ -127,7 +110,7 @@ def create_gc_u_turn_element(
     length_label = int(round(length_value))
     text_cell = gf.Component()
     length_text = text_cell << gf.components.text(
-        text=f"{length_label}",
+        text=f"L{length_label}",
         size=text_size,
         layer=text_layer,
     )

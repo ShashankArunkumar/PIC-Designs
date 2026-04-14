@@ -1,14 +1,27 @@
 {
-  "default_model": "GC_1550_TE",
+  "default_model": "GC_532_Airclad",
   "models": {
-    "GC_1550_TE": {
+    "GC_532_Airclad": {
       "component_type": "grating_coupler_elliptical_uniform",
-      "n_periods": 20,
-      "period": 0.75,
+      "n_periods": 36,
+      "period": 0.35,
       "fill_factor": 0.5,
-      "taper_length": 15.0,
-      "taper_angle": 35.0,
-      "wavelength": 1.55,
+      "taper_length": 24.0,
+      "taper_angle": 27.0,
+      "wavelength": 0.532,
+      "fiber_angle": 15.0,
+      "polarization": "te",
+      "width": 0.5,
+      "layer": [1, 0]
+    },
+    "GC_532_SiO_2": {
+      "component_type": "grating_coupler_elliptical_uniform",
+      "n_periods": 36,
+      "period": 0.5,
+      "fill_factor": 0.5,
+      "taper_length": 24.0,
+      "taper_angle": 27.0,
+      "wavelength": 0.532,
       "fiber_angle": 15.0,
       "polarization": "te",
       "width": 0.5,

@@ -74,7 +74,7 @@ def add_waveguide_width_text(
     """Add plain top-left text label with W-prefixed width."""
     width_nm = int(round(wg_width * 1000))
     label = component << gf.components.text(
-        text=f"W{width_nm}",
+        text=f"BW{width_nm}",
         size=text_size,
         layer=text_layer,
     )
@@ -161,7 +161,7 @@ def create_bend_array(base_params: dict, array_params: dict) -> gf.Component:
         int(length_cfg.get("step", 100)),
     )
     width_nm = int(round(float(effective_params["wg_width"]) * 1000))
-    array_name = f"w{width_nm}"
+    array_name = str(array_cfg.get("array_name", f"BW{width_nm}"))
     array = gf.Component(array_name)
 
     bend_layers = effective_params["layers"]
