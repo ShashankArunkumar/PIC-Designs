@@ -1,18 +1,17 @@
 import gdsfactory as gf
 from pathlib import Path
+import json
+import random
 import kfactory.conf as kf_conf
 
-# Route gdsfactory build artifacts to Setup/build.
+
 for _parent in Path(__file__).resolve().parents:
     _setup_dir = _parent / "Setup"
     if _setup_dir.exists():
         kf_conf.config.__dict__["project_dir"] = _setup_dir
         break
-import json
-import random  # Import the random module
-from pathlib import Path
 
-# gdsfactory 9.x requires an active PDK before geometry/layer creation.
+
 try:
     gf.get_active_pdk()
 except Exception:
@@ -22,294 +21,170 @@ except Exception:
         from gdsfactory.generic_tech import get_generic_pdk
         get_generic_pdk().activate()
 
-# Define the Devise_origin point
-Devise_origin = (250, -250)
 
-# Define a new NW_origin point
-NW_origin = (Devise_origin[0] - 4.75, Devise_origin[1] - 4.75)
+DEVICE_ORIGIN = (250.0, -250.0)
 
-def create_filled_box():
-    """
-    Create a 0.5x0.5 micron filled box renamed as NW_marker with a unique name.
 
-    Returns:
-        gf.Component: The filled box component.
-    """
-    filled_box = gf.Component(f"NW_marker_{letter}{number}")
-    filled_box.add_polygon([
-        (0, 0),
-        (0.5, 0),
-        (0.5, 0.5),
-        (0, 0.5),
-        (0, 0)
-    ], layer=(3, 0))
-    return filled_box
+def _add_outline(top_level: gf.Component, width: float = 500.0, height: float = 500.0, border: float = 0.005) -> None:
+    top_level.add_polygon(
+        [(0, border / 2), (width, border / 2), (width, -border / 2), (0, -border / 2)],
+        layer=(10, 0),
+    )
+    top_level.add_polygon(
+        [
+            (0, -height + border / 2),
+            (width, -height + border / 2),
+            (width, -height - border / 2),
+            (0, -height - border / 2),
+        ],
+        layer=(10, 0),
+    )
+    top_level.add_polygon(
+        [(border / 2, 0), (-border / 2, 0), (-border / 2, -height), (border / 2, -height)],
+        layer=(10, 0),
+    )
+    top_level.add_polygon(
+        [
+            (width - border / 2, 0),
+            (width + border / 2, 0),
+            (width + border / 2, -height),
+            (width - border / 2, -height),
+        ],
+        layer=(10, 0),
+    )
 
-def create_outline():
-    """
-    Create the outline of a 500x500 box with the top-left corner at the origin.
 
-    Returns:
-        gf.Component: The outline component.
-    """
-    # Create a new component for the outline with a unique name
-    outline = gf.Component(f"500_box_{letter}{number}")
-
-    # Define the size of the box
-    width, height = 500, 500
-
-    # Adjust the coordinates to center the rectangle, accounting for the border width
-    border_width = 0.005
-
-    # Top edge
-    outline.add_polygon([
-        (0, border_width / 2),
-        (width, border_width / 2),
-        (width, -border_width / 2),
-        (0, -border_width / 2),
-        (0, border_width / 2)
-    ], layer=(1, 0))
-
-    # Bottom edge
-    outline.add_polygon([
-        (0, -height + border_width / 2),
-        (width, -height + border_width / 2),
-        (width, -height - border_width / 2),
-        (0, -height - border_width / 2),
-        (0, -height + border_width / 2)
-    ], layer=(1, 0))
-
-    # Left edge
-    outline.add_polygon([
-        (border_width / 2, 0),
-        (-border_width / 2, 0),
-        (-border_width / 2, -height),
-        (border_width / 2, -height),
-        (border_width / 2, 0)
-    ], layer=(1, 0))
-
-    # Right edge
-    outline.add_polygon([
-        (width - border_width / 2, 0),
-        (width + border_width / 2, 0),
-        (width + border_width / 2, -height),
-        (width - border_width / 2, -height),
-    ], layer=(1, 0))
-
-    # Define a reusable marker component
-    def create_marker():
-        """
-        Create a single 8x8 marker box with a unique name.
-
-        Returns:
-            gf.Component: The marker component.
-        """
-        marker = gf.Component(f"Marker_{letter}{number}")
-        marker_size = 8
-        marker.add_polygon([
+def _add_markers(top_level: gf.Component) -> None:
+    marker = gf.Component(f"marker_8x8_{random.randint(10000, 99999)}")
+    marker_size = 8.0
+    marker.add_polygon(
+        [
             (-marker_size / 2, marker_size / 2),
             (marker_size / 2, marker_size / 2),
             (marker_size / 2, -marker_size / 2),
             (-marker_size / 2, -marker_size / 2),
-            (-marker_size / 2, marker_size / 2)
-        ], layer=(97, 0))
-        return marker
+        ],
+        layer=(97, 0),
+    )
 
-    # Create the marker component
-    marker = create_marker()
-
-    # Define marker positions
     marker_positions = [
-        (20, -20),(130,-20),(20,-130),  # Top-left corner
-        (480, -20),(370,-20),(480,-130),  # Top-right corner
-        (20, -480),(20,-370),(130,-480),  # Bottom-left corner
-        (480, -480),(370,-480),(480,-370),  # Bottom-right corner
+        (20, -20), (130, -20), (20, -130),
+        (480, -20), (370, -20), (480, -130),
+        (20, -480), (20, -370), (130, -480),
+        (480, -480), (370, -480), (480, -370),
     ]
 
-    # Create the top-level component
-    top_level = gf.Component(f"{letter}{number}")
-
-    # Add the outline as a subcomponent of the top-level component
-    outline_ref = top_level.add_ref(outline)
-
-    # Add markers as subcomponents of the top-level component
     for position in marker_positions:
         top_level.add_ref(marker).move(position)
 
-    # Create the filled box component
-    filled_box = create_filled_box()
 
-    # Define positions relative to Devise_origin
+def _add_nw_filled_boxes(top_level: gf.Component) -> None:
+    filled_box = gf.Component(f"nw_marker_0p5_{random.randint(10000, 99999)}")
+    filled_box.add_polygon([(0, 0), (0.5, 0), (0.5, 0.5), (0, 0.5)], layer=(3, 0))
+
     filled_box_positions = [
-        (Devise_origin[0] - 4.5, Devise_origin[1] - 4.5),
-        (Devise_origin[0] - 4.5, Devise_origin[1] + 4.5),
-        (Devise_origin[0] + 4.5, Devise_origin[1] - 4.5),
-        (Devise_origin[0] - 4.5, Devise_origin[1] - 8),
-        (Devise_origin[0] - 8, Devise_origin[1] - 4.5)
+        (DEVICE_ORIGIN[0] - 4.5, DEVICE_ORIGIN[1] - 4.5),
+        (DEVICE_ORIGIN[0] - 4.5, DEVICE_ORIGIN[1] + 4.5),
+        (DEVICE_ORIGIN[0] + 4.5, DEVICE_ORIGIN[1] - 4.5),
+        (DEVICE_ORIGIN[0] - 4.5, DEVICE_ORIGIN[1] - 8.0),
+        (DEVICE_ORIGIN[0] - 8.0, DEVICE_ORIGIN[1] - 4.5),
     ]
 
-    # Add filled boxes to the top-level component
     for position in filled_box_positions:
         top_level.add_ref(filled_box).move(position)
 
-    # Recreate the grid of 200x200 boxes centered at Devise_origin
-    def create_grid(num_rows=3, num_cols=4, grid_box_size=200):
-        """
-        Create a grid of boxes with dynamic rows, columns, and box size.
 
-        Args:
-            num_rows (int): Number of rows in the grid.
-            num_cols (int): Number of columns in the grid.
-            grid_box_size (int): Size of each grid box.
-
-        Returns:
-            list: Positions for the grid.
-        """
-        border_width = 0.005  # Adjust border width as needed
-
-        # Define positions for the grid with translation by (200, 200)
-        grid_positions = [
-            (Devise_origin[0] + (col - 1) * grid_box_size + 200, Devise_origin[1] + (row - 1) * grid_box_size + 200)
-            for row in range(-(num_rows // 2), (num_rows // 2) + 1)  # Rows based on variables
-            for col in range(-(num_cols // 2), (num_cols // 2) + 1)  # Columns based on variables
-        ]
-
-        return grid_positions
-
-    # Create the grid box component
-    def create_grid_box(grid_box_size=200):
-        """
-        Create a grid box with a specified size.
-
-        Args:
-            grid_box_size (int): Size of the grid box.
-
-        Returns:
-            gf.Component: The grid box component.
-        """
-        # Append a random number to the component name to ensure uniqueness
-        grid_box = gf.Component(f"Grid_Box_{random.randint(1000, 9999)}")
-
-        # Top edge
-        grid_box.add_polygon([
-            (-grid_box_size / 2, grid_box_size / 2 - border_width / 2),
-            (grid_box_size / 2, grid_box_size / 2 - border_width / 2),
-            (grid_box_size / 2, grid_box_size / 2 + border_width / 2),
-            (-grid_box_size / 2, grid_box_size / 2 + border_width / 2),
-            (-grid_box_size / 2, grid_box_size / 2 - border_width / 2)
-        ], layer=(4, 0))
-
-        # Bottom edge
-        grid_box.add_polygon([
-            (-grid_box_size / 2, -grid_box_size / 2 + border_width / 2),
-            (grid_box_size / 2, -grid_box_size / 2 + border_width / 2),
-            (grid_box_size / 2, -grid_box_size / 2 - border_width / 2),
-            (-grid_box_size / 2, -grid_box_size / 2 - border_width / 2),
-            (-grid_box_size / 2, -grid_box_size / 2 + border_width / 2)
-        ], layer=(4, 0))
-
-        # Left edge
-        grid_box.add_polygon([
-            (-grid_box_size / 2 + border_width / 2, grid_box_size / 2),
-            (-grid_box_size / 2 - border_width / 2, grid_box_size / 2),
-            (-grid_box_size / 2 - border_width / 2, -grid_box_size / 2),
-            (-grid_box_size / 2 + border_width / 2, -grid_box_size / 2),
-            (-grid_box_size / 2 + border_width / 2, grid_box_size / 2)
-        ], layer=(4, 0))
-
-        # Right edge
-        grid_box.add_polygon([
-            (grid_box_size / 2 - border_width / 2, grid_box_size / 2),
-            (grid_box_size / 2 + border_width / 2, grid_box_size / 2),
-            (grid_box_size / 2 + border_width / 2, -grid_box_size / 2),
-            (grid_box_size / 2 - border_width / 2, -grid_box_size / 2),
-            (grid_box_size / 2 - border_width / 2, grid_box_size / 2)
-        ], layer=(4, 0))
-
-        return grid_box
-
-    # Create the grid box component
-    grid_box = create_grid_box()
-
-    # Add grid boxes to the top-level component
-    for position in create_grid(num_rows, num_cols):
-        top_level.add_ref(grid_box).move(position)
-
-    # Add a text component at position (75, -75)
-    def create_text_component(letter='A', number=1):
-        """
-        Create a text component that adds visible text to the GDS file using `text`.
-
-        Args:
-            letter (str): The letter input for the text.
-            number (int): The number input for the text.
-
-        Returns:
-            gf.Component: The text component.
-        """
-        text = f"{letter}{number}"
-        text_component = gf.components.text(text=text, size=50, position=(0, 0), justify='left', layer=(5, 0))
-
-        return text_component
-
-    # Create the text component with default values
-    text_component = create_text_component(letter=letter, number=number)
-
-    # Add the text component to the top-level component at a visible position
+def _add_text(top_level: gf.Component, letter: str, number: int) -> None:
+    text_component = gf.components.text(
+        text=f"{letter}{number}", size=50, position=(0, 0), justify="left", layer=(5, 0)
+    )
     top_level.add_ref(text_component).move((40, -100))
 
-    # Define a polygon in the shape of an arrow mark
-    def create_arrow():
-        """
-        Create an arrow-shaped polygon.
 
-        Returns:
-            gf.Component: The arrow component.
-        """
-        # Append a random number to the component name to ensure uniqueness
-        arrow = gf.Component(f"Arrow_{random.randint(1000, 9999)}")
-        arrow.add_polygon([
-            (0, 65),  # Tip of the arrow
-            (-40, 25),  # Left edge of the arrowhead
-            (-10, 25),  # Left base of the arrowhead
-            (-15, -50),  # Left bottom of the tail
-            (15, -50),  # Right bottom of the tail
-            (10, 25),  # Right base of the arrowhead
-            (40, 25),  # Right edge of the arrowhead
-            
-        ], layer=(7, 0))
-        return arrow
+def _add_grid(top_level: gf.Component, num_rows: int, num_cols: int, grid_box_size: float = 200.0, border: float = 0.005) -> None:
+    grid_box = gf.Component(f"grid_box_{random.randint(10000, 99999)}")
 
-    # Create the arrow component
-    arrow = create_arrow()
+    grid_box.add_polygon(
+        [
+            (-grid_box_size / 2, grid_box_size / 2 - border / 2),
+            (grid_box_size / 2, grid_box_size / 2 - border / 2),
+            (grid_box_size / 2, grid_box_size / 2 + border / 2),
+            (-grid_box_size / 2, grid_box_size / 2 + border / 2),
+        ],
+        layer=(4, 0),
+    )
+    grid_box.add_polygon(
+        [
+            (-grid_box_size / 2, -grid_box_size / 2 + border / 2),
+            (grid_box_size / 2, -grid_box_size / 2 + border / 2),
+            (grid_box_size / 2, -grid_box_size / 2 - border / 2),
+            (-grid_box_size / 2, -grid_box_size / 2 - border / 2),
+        ],
+        layer=(4, 0),
+    )
+    grid_box.add_polygon(
+        [
+            (-grid_box_size / 2 + border / 2, grid_box_size / 2),
+            (-grid_box_size / 2 - border / 2, grid_box_size / 2),
+            (-grid_box_size / 2 - border / 2, -grid_box_size / 2),
+            (-grid_box_size / 2 + border / 2, -grid_box_size / 2),
+        ],
+        layer=(4, 0),
+    )
+    grid_box.add_polygon(
+        [
+            (grid_box_size / 2 - border / 2, grid_box_size / 2),
+            (grid_box_size / 2 + border / 2, grid_box_size / 2),
+            (grid_box_size / 2 + border / 2, -grid_box_size / 2),
+            (grid_box_size / 2 - border / 2, -grid_box_size / 2),
+        ],
+        layer=(4, 0),
+    )
 
-    # Add the arrow to the top-level component, rotate it 45 degrees, and place it at (80, -420)
-    arrow_ref = top_level.add_ref(arrow)
-    arrow_ref.rotate(-45)
-    arrow_ref.move((90, -410))
+    x_offset = (num_cols - 1) / 2.0
+    y_offset = (num_rows - 1) / 2.0
 
-    # Duplicate the arrow, rotate it by 45 degrees, and place it at (420, -420)
-    arrow_ref_duplicate = top_level.add_ref(arrow)
-    arrow_ref_duplicate.rotate(45)
-    arrow_ref_duplicate.move((410, -410))
+    for row in range(num_rows):
+        for col in range(num_cols):
+            x = DEVICE_ORIGIN[0] + (col - x_offset) * grid_box_size
+            y = DEVICE_ORIGIN[1] + (row - y_offset) * grid_box_size
+            top_level.add_ref(grid_box).move((x, y))
 
-    # Return the top-level component
+
+# Global variables for create_outline() compatibility with Die.py
+letter = "A"
+number = 1
+num_rows = 3
+num_cols = 3
+
+
+def create_outline() -> gf.Component:
+    """Legacy interface for Die.py compatibility. Uses global variables: letter, number, num_rows, num_cols.
+    No triangle support (original Die.py behavior)."""
+    top_level = gf.Component(f"{letter}{number}")
+
+    _add_outline(top_level)
+    _add_markers(top_level)
+    _add_nw_filled_boxes(top_level)
+    _add_grid(top_level, num_rows=num_rows, num_cols=num_cols)
+    _add_text(top_level, letter=letter, number=number)
+
     return top_level
 
-# Load configuration from cell.json using a path relative to this script.
-config_path = Path(__file__).resolve().parents[1] / "Json" / "cell.json"
-with open(config_path, "r") as config_file:
-    config = json.load(config_file)
-
-letter = config["letter"]
-number = config["number"]
-num_rows = config["num_rows"]
-num_cols = config["num_cols"]
 
 if __name__ == "__main__":
-    # Create the outline
-    outline = create_outline()
+    config_path = Path(__file__).resolve().parents[1] / "Json" / "cell.json"
+    if not config_path.exists():
+        raise FileNotFoundError(f"Missing configuration file: {config_path}")
 
-    # Display the outline
-    outline.show()
+    with config_path.open("r", encoding="utf-8") as f:
+        config = json.load(f)
 
+    # Use globals for legacy behavior
+    letter = str(config["letter"])
+    number = int(config["number"])
+    num_rows = int(config["num_rows"])
+    num_cols = int(config["num_cols"])
+
+    component = create_outline()
+    component.show()

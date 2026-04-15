@@ -239,9 +239,11 @@ def place_cell_component(letter, number, x, y):
     cell = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(cell)
 
-    # Update the letter and number variables in cell.py
+    # Update the global variables in cell.py for create_outline() compatibility
     cell.letter = letter
     cell.number = number
+    cell.num_rows = 3  # Default grid size
+    cell.num_cols = 3
 
     # Generate the top-level component
     top_level_component = cell.create_outline()
