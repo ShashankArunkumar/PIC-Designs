@@ -1,82 +1,20 @@
 {
   "cells": [
-    {
-      "letter": "I",
-      "number": 9,
-      "NW coordinates": {
-        "A": [249.34513, -252.38242],
-        "B": [251.80780, -250.69960],
-        "C": [251.56154,-250.20707]
-      },
-      "waveguide": {
-        "width": 0.5,
-        "prenanowire_length": 5.0,
-        "postnanowire_length": 2.5,
-        "bend_radius": 8.0,
-        "bend_180_radius": 15.0,
-        "straight_wg_length_1": 20.0,
-        "straight_wg_length_2": 10.0,
-        "180_bend_sigh": "positive",
-        "final_waveguide_length": 1.0,
-        "grating_coupler_model": "GC_532_Airclad"
-      }
-    } ,
-    {
-      "letter": "I",
-      "number": 9,
-      "NW coordinates": {
-        "A": [249.34513, -252.38242],
-        "B": [251.80780, -250.69960],
-        "C": [251.56154,-250.20707]
-      },
-      "waveguide": {
-        "width": 0.5,
-        "prenanowire_length": 5.0,
-        "postnanowire_length": 2.5,
-        "bend_radius": 8.0,
-        "bend_180_radius": 15.0,
-        "straight_wg_length_1": 20.0,
-        "straight_wg_length_2": 10.0,
-        "180_bend_sigh": "negative",
-        "final_waveguide_length": 1.0,
-        "grating_coupler_model": "GC_532_Airclad"
-      }
-    } ,
+    
     {
       "letter": "H",
       "number": 9,
       "NW coordinates": {
-        "C": [251.40022, -248.41519],
-        "B": [251.09666, -248.11163],
-        "A": [253.77813,-246.08788]
+        "C": [254.47260, -251.97590],
+        "B": [254.50921, -251.86608],
+        "A": [249.30349,-250.26263]
       },
       "waveguide": {
         "width": 0.5,
         "prenanowire_length": 5.0,
         "postnanowire_length": 2.5,
-        "bend_radius": 8.0,
-        "bend_180_radius": 15.0,
-        "straight_wg_length_1": 20.0,
-        "straight_wg_length_2": 10.0,
-        "180_bend_sigh": "positive",
-        "final_waveguide_length": 1.0,
-        "grating_coupler_model": "GC_532_Airclad"
-      }
-    } ,
-    {
-      "letter": "Q",
-      "number": 9,
-      "NW coordinates": {
-        "C": [251.40022, -248.41519],
-        "B": [251.09666, -248.11163],
-        "A": [253.77813,-246.08788]
-      },
-      "waveguide": {
-        "width": 0.5,
-        "prenanowire_length": 5.0,
-        "postnanowire_length": 2.5,
-        "bend_radius": 8.0,
-        "bend_180_radius": 15.0,
+        "bend_radius": 20,
+        "bend_180_radius": 10.0,
         "straight_wg_length_1": 20.0,
         "straight_wg_length_2": 10.0,
         "180_bend_sigh": "negative",
