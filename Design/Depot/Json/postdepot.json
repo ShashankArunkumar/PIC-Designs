@@ -2,15 +2,96 @@
   "cells": [
     
     {
-      "letter": "H",
-      "number": 9,
-      "NW coordinates": {
-        "C": [254.47260, -251.97590],
-        "B": [254.50921, -251.86608],
-        "A": [249.30349,-250.26263]
-      },
+      "letter": "B",
+      "number": 1,
+      "NW coordinates": {"A" : [251.33397325, -251.03253156], "B" : [254.75266904, -246.62401643], "C" : [254.58800760, -246.49683889]},
       "waveguide": {
-        "width": 0.5,
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 10.0,
+        "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    }, 
+    {
+      "letter": "C",
+      "number": 3,
+      "NW coordinates": {"A" : [250.37659922, -254.45321912], "B" : [248.77037714, -249.49436858], "C" : [248.55817660, -249.54710799]},  
+      "waveguide": {
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 5.0,
+        "180_bend_sigh": "positive",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "C",
+      "number": 4,
+      "NW coordinates": {"A" : [249.38332909, -250.97754254], "B" : [254.21793627, -253.08874432], "C" : [254.30176587, -252.98556942]},  
+      "waveguide": {
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 7.0,
+        "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "D",
+      "number": 2,
+      "NW coordinates": {"A" : [250.31768981, -252.67836305], "B" : [253.09982801, -247.81094465], "C" : [252.81350890, -247.68240007]},  
+      "waveguide": {
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 8.0,
+        "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "D",
+      "number": 3,
+      "NW coordinates":{"A" : [246.81336118, -248.40821569], "B" : [249.88727832, -251.67671892], "C" : [250.13552441, -251.50432580]},  
+      "waveguide": { 
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 10.0,
+        "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "E",
+      "number": 3,
+      "NW coordinates":{ "A" : [249.25731867, -250.23611756], "B" : [254.43963876, -251.95737126], "C" : [254.49294921, -251.86185671]},  
+      "waveguide": { 
+        "width": 0.25,
         "prenanowire_length": 5.0,
         "postnanowire_length": 2.5,
         "bend_radius": 20,
@@ -18,6 +99,78 @@
         "straight_wg_length_1": 20.0,
         "straight_wg_length_2": 10.0,
         "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "F",
+      "number": 3,
+      "NW coordinates":{
+     "A" : [247.27242648, -250.75942919], "B" : [252.45508865, -249.13253138], "C" : [252.39708575, -248.99382880]},  
+      "waveguide": { 
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 4.0,
+        "180_bend_sigh": "positive",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "G",
+      "number": 2,
+      "NW coordinates":{
+     "A" : [248.86277136, -254.93278940], "B" : [249.12740582, -252.51657559], "C" : [248.96899169, -252.51211322]},  
+      "waveguide": { 
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 10.0,
+        "straight_wg_length_1": 25.0,
+        "straight_wg_length_2": 3.0,
+        "180_bend_sigh": "negative",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "G",
+      "number": 3,
+      "NW coordinates":{
+     "A" : [247.67035495, -252.57842042], "B" : [250.44480816, -256.74409484], "C" : [250.72469568, -256.59506382]},  
+      "waveguide": { 
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 18.0,
+        "straight_wg_length_1": 20.0,
+        "straight_wg_length_2": 10.0,
+        "180_bend_sigh": "positive",
+        "final_waveguide_length": 1.0,
+        "grating_coupler_model": "GC_532_Airclad"
+      }
+    } , 
+    {
+      "letter": "H",
+      "number": 4,
+      "NW coordinates":{
+     "A" : [247.75085193, -247.84112029], "B" : [248.30182280, -253.40853636], "C" : [248.50423589, -253.34106533]},  
+      "waveguide": { 
+        "width": 0.25,
+        "prenanowire_length": 5.0,
+        "postnanowire_length": 2.5,
+        "bend_radius": 20,
+        "bend_180_radius": 13.0,
+        "straight_wg_length_1": 25.0,
+        "straight_wg_length_2": 3.0,
+        "180_bend_sigh": "positive",
         "final_waveguide_length": 1.0,
         "grating_coupler_model": "GC_532_Airclad"
       }

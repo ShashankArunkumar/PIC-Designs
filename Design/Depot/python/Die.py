@@ -309,4 +309,3 @@ if __name__ == "__main__":
 
     # Display the top layer with grid, boundary, corners, filled boxes, and text
     top_layer.show()
-
