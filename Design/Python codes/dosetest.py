@@ -38,11 +38,15 @@ def _load_bend_params() -> dict:
     }
 
 
-def create_L200_bend(layer: tuple[int, int]) -> gf.Component:
+def create_L200_bend(layer: tuple[int, int], gc_model: str | None = None) -> gf.Component:
     """Create a 180-degree Euler bend assembly with total length ~400 um.
 
     The component omits any L{length} text so labels can be added externally.
     The geometry is extruded using the provided layer.
+    
+    Args:
+        layer: The GDS layer tuple (datatype, layer_num).
+        gc_model: Grating coupler model name (None for default).
     """
     params = _load_bend_params()
     wg_width = params.get("wg_width", 0.5)
@@ -67,7 +71,7 @@ def create_L200_bend(layer: tuple[int, int]) -> gf.Component:
         # try to load grating from project grating_couplers if available
         from grating_couplers import create_grating_coupler
 
-        gc = create_grating_coupler(layer=layer, port_width=wg_width)
+        gc = create_grating_coupler(name=gc_model, layer=layer, port_width=wg_width)
     except Exception:
         gc = None
 
@@ -97,11 +101,18 @@ def create_L200_bend(layer: tuple[int, int]) -> gf.Component:
     return top
 
 
-def make_array(values: list[float], out_path: Path, y_spacing: float = 35.0, start_layer: int = 50) -> None:
+def make_array(values: list[float], out_path: Path, y_spacing: float = 35.0, start_layer: int = 50, gc_model: str | None = None) -> None:
     """Create an array of 10 bend elements (vertical), write to out_path.
     
     Origin is set to the top-left of the 500 µm enclosing box.
     Numbers are positioned to the left of the grating couplers.
+    
+    Args:
+        values: List of dose values to test.
+        out_path: Output GDS file path.
+        y_spacing: Vertical spacing between bends (default 35.0 µm).
+        start_layer: Starting layer number (default 50).
+        gc_model: Grating coupler model name (None for default).
     """
     # Use the output filename (without extension) as the unique component name
     unique_name = out_path.stem
@@ -112,7 +123,7 @@ def make_array(values: list[float], out_path: Path, y_spacing: float = 35.0, sta
     
     for i, val in enumerate(values):
         layer_num = start_layer + i
-        bend_comp = create_L200_bend(layer=(layer_num, 0))
+        bend_comp = create_L200_bend(layer=(layer_num, 0), gc_model=gc_model)
         ref = temp.add_ref(bend_comp)
         ref.move((0, -i * y_spacing))
         
@@ -169,7 +180,7 @@ def make_array(values: list[float], out_path: Path, y_spacing: float = 35.0, sta
     
     for ref, txt_ref, i, val in refs_data:
         # Get the position and apply offset
-        bend_comp = create_L200_bend(layer=(start_layer + i, 0))
+        bend_comp = create_L200_bend(layer=(start_layer + i, 0), gc_model=gc_model)
         bend_ref = top.add_ref(bend_comp)
         bend_ref.move((offset_x, offset_y - i * y_spacing))
         
@@ -199,20 +210,23 @@ def make_array(values: list[float], out_path: Path, y_spacing: float = 35.0, sta
 
 
 def _frange(start: float) -> list[float]:
-    # produce 10 values with 0.05 step
-    return [round(start + 0.05 * i, 3) for i in range(10)]
+    # produce 10 values with 0.1 step
+    return [round(start + 0.1 * i, 3) for i in range(10)]
 
 
-def main() -> None:
+def main(gc_model: str | None = None) -> None:
+    """Generate dose test arrays.
+    
+    Args:
+        gc_model: Grating coupler model name. If None, uses the default model.
+    """
     project_dir = _configure_project_dir()
     out_dir = project_dir / "build" / "gds"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     arrays = [
-        (_frange(1.20), out_dir / "dosetest_array1.gds", 50),
-        (_frange(1.70), out_dir / "dosetest_array2.gds", 60),
-        (_frange(2.20), out_dir / "dosetest_array3.gds", 70),
-        (_frange(2.70), out_dir / "dosetest_array4.gds", 80),
+        (_frange(9.0), out_dir / "dosetest_array1.gds", 50),
+        (_frange(10.0), out_dir / "dosetest_array2.gds", 60),
     ]
 
     # make sure PDK active
@@ -227,7 +241,7 @@ def main() -> None:
             get_generic_pdk().activate()
 
     for vals, path, start_layer in arrays:
-        make_array(vals, path, y_spacing=35.0, start_layer=start_layer)
+        make_array(vals, path, y_spacing=35.0, start_layer=start_layer, gc_model=gc_model)
 
 
 if __name__ == "__main__":

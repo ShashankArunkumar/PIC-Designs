@@ -14,6 +14,26 @@
       "width": 0.5,
       "layer": [1, 0]
     },
+    "GC_532_Airclad_trench": {
+      "component_type": "grating_coupler_elliptical_trenches",
+      "polarization": "te",
+      "taper_length": 12.6,
+      "taper_angle": 35.0,
+      "trenches_extra_angle": 17.0,
+      "wavelength": 0.532,
+      "fiber_angle": 8.0,
+      "grating_line_width": 0.2,
+      "neff": 1.9,
+      "ncladding": 1.0,
+      "layer_trench": "SHALLOW_ETCH",
+      "p_start": 20,
+      "n_periods": 45,
+      "end_straight_length": 1.0,
+      "taper": "taper",
+      "cross_section": "strip",
+      "width": 0.5,
+      "layer": [1, 0]
+    },
     "GC_532_SiO_2": {
       "component_type": "grating_coupler_elliptical_uniform",
       "n_periods": 36,

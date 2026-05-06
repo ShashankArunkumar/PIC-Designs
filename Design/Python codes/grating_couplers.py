@@ -22,8 +22,7 @@ except Exception:
 
         get_generic_pdk().activate()
 
-_REQUIRED_FIELDS = (
-    "component_type",
+_UNIFORM_FIELDS = (
     "n_periods",
     "period",
     "fill_factor",
@@ -33,6 +32,24 @@ _REQUIRED_FIELDS = (
     "fiber_angle",
     "polarization",
     "width",
+)
+
+_TRENCH_FIELDS = (
+    "polarization",
+    "taper_length",
+    "taper_angle",
+    "trenches_extra_angle",
+    "wavelength",
+    "fiber_angle",
+    "grating_line_width",
+    "neff",
+    "ncladding",
+    "layer_trench",
+    "p_start",
+    "n_periods",
+    "end_straight_length",
+    "taper",
+    "cross_section",
 )
 
 
@@ -66,7 +83,17 @@ def get_gc_params(name: str | None = None) -> dict:
         available = ", ".join(list_available_gcs())
         raise ValueError(f"Unknown grating coupler model '{selected}'. Available: {available}")
 
-    missing = [field for field in _REQUIRED_FIELDS if field not in model]
+    component_type = model.get("component_type")
+    if component_type == "grating_coupler_elliptical_uniform":
+        required_fields = _UNIFORM_FIELDS
+    elif component_type == "grating_coupler_elliptical_trenches":
+        required_fields = _TRENCH_FIELDS
+    else:
+        raise ValueError(
+            f"Model '{selected}' has unsupported component_type '{component_type}'."
+        )
+
+    missing = [field for field in required_fields if field not in model]
     if missing:
         raise ValueError(
             f"Model '{selected}' is missing required fields: {', '.join(missing)}"
@@ -86,13 +113,40 @@ def create_grating_coupler(
 ) -> gf.Component:
     params = get_gc_params(name)
 
-    if params["component_type"] != "grating_coupler_elliptical_uniform":
+    component_type = params["component_type"]
+    if component_type not in (
+        "grating_coupler_elliptical_uniform",
+        "grating_coupler_elliptical_trenches",
+    ):
         raise ValueError(
-            "Only 'grating_coupler_elliptical_uniform' is currently supported. "
-            f"Got '{params['component_type']}'."
+            "Only 'grating_coupler_elliptical_uniform' and "
+            "'grating_coupler_elliptical_trenches' are currently supported. "
+            f"Got '{component_type}'."
         )
 
     gc_layer = tuple(params.get("layer", [1, 0])) if layer is None else tuple(layer)
+
+    if component_type == "grating_coupler_elliptical_trenches":
+        from gdsfactory.components.grating_couplers import grating_coupler_elliptical_trenches
+
+        return grating_coupler_elliptical_trenches(
+            polarization=str(params["polarization"]),
+            taper_length=float(params["taper_length"]),
+            taper_angle=float(params["taper_angle"]),
+            trenches_extra_angle=float(params["trenches_extra_angle"]),
+            wavelength=float(params["wavelength"]),
+            fiber_angle=float(params["fiber_angle"]),
+            grating_line_width=float(params["grating_line_width"]),
+            neff=float(params["neff"]),
+            ncladding=float(params["ncladding"]),
+            layer_trench=params["layer_trench"],
+            p_start=int(params["p_start"]),
+            n_periods=int(params["n_periods"]),
+            end_straight_length=float(params["end_straight_length"]),
+            taper=params["taper"],
+            cross_section=params["cross_section"],
+        )
+
     width_value = float(params["width"]) if port_width is None else float(port_width)
     gc_xs = gf.cross_section.strip(width=width_value, layer=gc_layer)
 
